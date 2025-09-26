@@ -49,7 +49,10 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 // Static Folder for Image Uploads
-app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
+
 
 // API Routes
 app.use('/api/products', productRoutes);
