@@ -26,8 +26,22 @@ const app = express();
 
 app.set('trust proxy', 1);
 
+// --- CORS CONFIGURATION (THE FIX IS HERE) ---
+// We are specifying exactly which frontend URL is allowed to make requests.
+const allowedOrigins = ['https://ecommerce-2-csj6.onrender.com']; // Your Frontend URL
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+};
+
 // Core Middleware
-app.use(cors());
+app.use(cors(corsOptions)); // Use the specific cors options here
 app.use(express.json());
 
 // Static Folder for Image Uploads - Using process.cwd() for a robust path
@@ -51,5 +65,3 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`✅ Server is running successfully on port ${PORT}`));
-
-
