@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import ProductCard from '../components/ProductCard';
 import Searchbar from '../components/Searchbar';
+import { API_URL } from '../apiConfig'; // ✅ পরিবর্তন: API_URL ইম্পোর্ট করা হয়েছে
 
 const SearchResultsPage = () => {
     const [searchResults, setSearchResults] = useState([]);
@@ -23,7 +24,8 @@ const SearchResultsPage = () => {
             setIsLoading(true);
             setError(null);
             try {
-                const response = await axios.get(`http://localhost:5000/api/products/search?q=${query}&category=${category}`);
+                // ✅ পরিবর্তন: API URL এখন ডাইনামিক
+                const response = await axios.get(`${API_URL}/api/products/search?q=${query}&category=${category}`);
                 setSearchResults(response.data);
             } catch (err) {
                 setError('Failed to fetch search results. Please try again.');

@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
+import { API_URL } from '../apiConfig'; // ✅ পরিবর্তন: API_URL ইম্পোর্ট করা হয়েছে
 
 const ProductCard = ({ product }) => (
     <Link to={`/product/${product._id}`} className="group relative bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-300 flex flex-col">
         <div className="aspect-square w-full overflow-hidden bg-gray-50">
             <img 
-                src={`http://localhost:5000${product.image}`} 
+                src={`${API_URL}${product.image}`} // ✅ পরিবর্তন: ছবির URL এখন ডাইনামিক
                 alt={product.name} 
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
             />
@@ -41,30 +42,25 @@ const CategoryProductsPage = () => {
             setLoading(true);
             setError(null);
             
-            // ✅ ডিবাগিং: API কল করার আগে কনসোলে লগ করা হচ্ছে
             console.log(`Fetching products for page category: ${pageCategoryName}`);
 
             try {
-                const { data } = await axios.get(`http://localhost:5000/api/products?pageCategory=${pageCategoryName}`);
+                // ✅ পরিবর্তন: API URL এখন ডাইনামিক
+                const { data } = await axios.get(`${API_URL}/api/products?pageCategory=${pageCategoryName}`);
                 
-                // ✅ ডিবাগিং: API থেকে কী ডেটা আসছে তা কনসোলে লগ করা হচ্ছে
                 console.log('Received data from API:', data);
 
-                // ✅ সবচেয়ে গুরুত্বপূর্ণ লাইন: data.products ব্যবহার করা হচ্ছে
                 setProducts(data.products || []);
                 
             } catch (err) {
-                console.error("Error fetching products:", err); // এররটি কনসোলে দেখানো হবে
+                console.error("Error fetching products:", err);
                 setError('Failed to fetch products.');
             } finally {
-                // এই ব্লকটি try বা catch যাই হোক না কেন, সব সময় রান করবে
                 setLoading(false);
             }
         };
         fetchProducts();
     }, [pageCategoryName]);
-
-    // ... বাকি JSX কোড অপরিবর্তিত ...
 
     return (
         <div className="container mx-auto p-4">

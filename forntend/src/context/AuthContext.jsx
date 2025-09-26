@@ -1,9 +1,10 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import axios from 'axios';
+import { API_URL } from '../apiConfig'; // ✅ পরিবর্তন: API_URL ইম্পোর্ট করা হয়েছে
 
-// 1. Create a global Axios instance
+// 1. Create a global Axios instance with a dynamic baseURL
 const api = axios.create({
-    baseURL: 'http://localhost:5000',
+    baseURL: API_URL, // ✅ পরিবর্তন: baseURL এখন ডাইনামিক
 });
 
 // 2. Create the context
@@ -34,7 +35,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     useEffect(() => {
-        // ✅✅✅ মূল সমাধান: Axios Interceptor for handling banned users ✅✅✅
+        // Axios Interceptor for handling banned users
         const responseInterceptor = api.interceptors.response.use(
             // If the response is successful, just return it
             response => response,
@@ -67,4 +68,3 @@ export const AuthProvider = ({ children }) => {
 export const useAuth = () => {
     return useContext(AuthContext);
 };
-

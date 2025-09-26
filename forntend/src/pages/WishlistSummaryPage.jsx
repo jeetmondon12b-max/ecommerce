@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext.jsx';
 import { Link } from 'react-router-dom';
 import { FiHeart, FiLoader } from 'react-icons/fi';
 import toast, { Toaster } from 'react-hot-toast';
+import { API_URL } from '../apiConfig.js'; // ✅ পরিবর্তন: API_URL ইম্পোর্ট করা হয়েছে
 
 // ✅ মোবাইল ডিভাইসের জন্য কার্ড কম্পোনেন্ট
 const SummaryCard = ({ item, rank }) => (
@@ -12,7 +13,8 @@ const SummaryCard = ({ item, rank }) => (
             <Link to={`/product/${item.product._id}`} className="flex items-center gap-4 flex-grow min-w-0">
                 <span className="font-bold text-lg text-gray-500 w-6 text-center">{rank}.</span>
                 <img 
-                    src={`http://localhost:5000${item.product.image}`} 
+                    // ✅ পরিবর্তন: ছবির URL এখন ডাইনামিক
+                    src={`${API_URL}${item.product.image}`} 
                     alt={item.product.name} 
                     className="w-14 h-14 object-cover rounded-md flex-shrink-0"
                 />
@@ -43,7 +45,8 @@ const WishlistSummaryPage = () => {
             try {
                 setLoading(true);
                 const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
-                const { data } = await axios.get('/api/wishlist/summary', config);
+                // ✅ পরিবর্তন: API URL এখন ডাইনামিক
+                const { data } = await axios.get(`${API_URL}/api/wishlist/summary`, config);
                 setSummary(data);
             } catch (error) {
                 toast.error("Could not load wishlist summary.");
@@ -90,7 +93,8 @@ const WishlistSummaryPage = () => {
                                         <td className="p-4 font-bold text-gray-500">{index + 1}</td>
                                         <td className="p-4">
                                             <Link to={`/product/${item.product._id}`} className="flex items-center gap-4 hover:underline">
-                                                <img src={`http://localhost:5000${item.product.image}`} alt={item.product.name} className="w-16 h-16 object-cover rounded-md"/>
+                                                {/* ✅ পরিবর্তন: ছবির URL এখন ডাইনামিক */}
+                                                <img src={`${API_URL}${item.product.image}`} alt={item.product.name} className="w-16 h-16 object-cover rounded-md"/>
                                                 <div>
                                                     <p className="font-semibold text-gray-800">{item.product.name}</p>
                                                     <p className="text-xs text-gray-500 font-mono">ID: {item.product._id}</p>

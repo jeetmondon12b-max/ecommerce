@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext.jsx';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaTrash } from 'react-icons/fa';
+import { API_URL } from '../apiConfig.js'; // ✅ পরিবর্তন: API_URL ইম্পোর্ট করা হয়েছে
 
 const CartPage = () => {
     const { cartItems, removeFromCart } = useCart();
     const navigate = useNavigate();
     
-    // ✅ কোন কোন আইটেম সিলেক্ট করা হয়েছে তার জন্য নতুন স্টেট
+    // ✅ কোন কোন আইটেম সিলেক্ট করা হয়েছে তার জন্য নতুন স্টেট
     const [selectedItems, setSelectedItems] = useState([]);
 
     // ✅ যখনই cartItems পরিবর্তন হবে, selectedItems আপডেট হবে
@@ -25,7 +26,7 @@ const CartPage = () => {
         );
     };
 
-    // ✅ সব আইটেম একসাথে সিলেক্ট/ডিসিলেক্ট করার ফাংশন
+    // ✅ সব 아이টেম একসাথে সিলেক্ট/ডিসিলেক্ট করার ফাংশন
     const handleSelectAll = (e) => {
         if (e.target.checked) {
             setSelectedItems(cartItems.map(item => item.cartId));
@@ -34,7 +35,7 @@ const CartPage = () => {
         }
     };
 
-    // ✅ চেকআউটে যাওয়ার ফাংশন
+    // ✅ চেকআউটে যাওয়ার ফাংশন
     const handleProceedToCheckout = () => {
         const itemsForCheckout = cartItems.filter(item => selectedItems.includes(item.cartId));
         if (itemsForCheckout.length > 0) {
@@ -94,7 +95,8 @@ const CartPage = () => {
                                         checked={selectedItems.includes(item.cartId)}
                                         onChange={() => handleSelectItem(item.cartId)}
                                     />
-                                    <img src={`http://localhost:5000${item.image}`} alt={item.name} className="w-20 h-20 object-cover rounded"/>
+                                    {/* ✅ পরিবর্তন: ছবির URL এখন ডাইনামিক */}
+                                    <img src={`${API_URL}${item.image}`} alt={item.name} className="w-20 h-20 object-cover rounded"/>
                                     <div>
                                         <h2 className="font-bold text-lg">{item.name}</h2>
                                         <p className="text-sm text-gray-500">Size: {item.size || 'N/A'}, Qty: {item.quantity}</p>

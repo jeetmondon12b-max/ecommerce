@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
+import { API_URL } from '../apiConfig'; // ✅ পরিবর্তন: API_URL ইম্পোর্ট করা হয়েছে
 
 const CouponForm = () => {
     const [couponData, setCouponData] = useState({
@@ -22,8 +23,9 @@ const CouponForm = () => {
         e.preventDefault();
         setSubmitting(true);
 
+        // ✅ পরিবর্তন: API URL এখন ডাইনামিক। localhost-এর পরিবর্তে API_URL ব্যবহার করা হয়েছে।
         const apiCall = axios.post(
-            "http://localhost:5000/api/coupons",
+            `${API_URL}/api/coupons`,
             {
                 ...couponData,
                 code: couponData.code.toUpperCase(), // Ensure code is uppercase

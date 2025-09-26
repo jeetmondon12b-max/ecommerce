@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import ProductCard from './ProductCard'; // ProductCard কম্পোনেন্ট আগের মতোই থাকবে
+import ProductCard from './ProductCard'; 
+import { API_URL } from '../apiConfig'; // ✅ পরিবর্তন: API_URL ইম্পোর্ট করা হয়েছে
 
 // প্রোডাক্ট লোড হওয়ার সময় দেখানোর জন্য স্কেলেটন কম্পোনেন্ট
 const ProductSkeleton = () => (
@@ -18,26 +19,25 @@ const ProductSkeleton = () => (
     </div>
 );
 
-const ProductSection = ({ title, categorySlug }) => { // prop-এর নাম category থেকে categorySlug করা হয়েছে
+const ProductSection = ({ title, categorySlug }) => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     
-    // প্রোডাক্ট দেখানোর অবস্থা নিয়ন্ত্রণের জন্য নতুন state
     const [isExpanded, setIsExpanded] = useState(false);
-
-    // প্রাথমিকভাবে কয়টি প্রোডাক্ট দেখানো হবে তার সংখ্যা নির্ধারণ
     const initialLimit = 8;
 
     useEffect(() => {
         const fetchProducts = async () => {
             setLoading(true);
             setError(null);
-            setIsExpanded(false); // প্রতিবার নতুন ক্যাটাগরি লোড হওয়ার সময় এটিকে রিসেট করা হবে
+            setIsExpanded(false); 
             try {
-                const endpoint = categorySlug // prop-এর নাম এখানেও আপডেট করা হয়েছে
-                    ? `http://localhost:5000/api/products?category=${categorySlug}`
-                    : 'http://localhost:5000/api/products';
+                // ✅ পরিবর্তন: API URL এখন ডাইনামিক। localhost-এর পরিবর্তে API_URL ব্যবহার করা হয়েছে।
+                let endpoint = `${API_URL}/api/products`;
+                if (categorySlug) {
+                    endpoint += `?category=${categorySlug}`;
+                }
                 
                 const response = await axios.get(endpoint);
                 setProducts(response.data.products || []);
@@ -50,9 +50,8 @@ const ProductSection = ({ title, categorySlug }) => { // prop-এর নাম c
             }
         };
         fetchProducts();
-    }, [categorySlug, title]); // dependency array-তে categorySlug ব্যবহার করা হয়েছে
+    }, [categorySlug, title]);
 
-    // isExpanded state এর উপর ভিত্তি করে প্রোডাক্টের তালিকা নির্ধারণ
     const productsToShow = isExpanded ? products : products.slice(0, initialLimit);
 
     const renderContent = () => {
@@ -77,7 +76,6 @@ const ProductSection = ({ title, categorySlug }) => { // prop-এর নাম c
                     {productsToShow.map((product) => <ProductCard key={product._id} product={product} />)}
                 </div>
 
-                {/* "See All" বাটনটি শর্তসাপেক্ষে দেখানো হবে */}
                 {!isExpanded && products.length > initialLimit && (
                     <div className="text-center mt-10">
                         <button

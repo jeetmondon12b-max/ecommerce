@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/AuthContext.jsx';
 import { Link } from 'react-router-dom';
 import { FiShoppingBag, FiAlertCircle, FiXCircle, FiEye } from 'react-icons/fi';
 import OrderStatusTracker from '../components/OrderStatusTracker';
 import OrderDetailsModal from '../components/OrderDetailsModal';
+import { API_URL } from '../apiConfig.js'; // ✅ পরিবর্তন: API_URL ইম্পোর্ট করা হয়েছে
 
 const getStatusColor = (status) => {
-    // ... (এই কোড অপরিবর্তিত থাকবে)
     switch (status) {
         case 'Pending': return 'bg-yellow-100 text-yellow-800';
         case 'Processing': return 'bg-blue-100 text-blue-800';
@@ -27,7 +27,6 @@ const MyOrdersPage = () => {
     const [selectedOrder, setSelectedOrder] = useState(null);
 
     useEffect(() => {
-        // ... (API কল করার কোড অপরিবর্তিত থাকবে)
         const fetchMyOrders = async () => {
             if (!userInfo) {
                 setLoading(false);
@@ -39,7 +38,8 @@ const MyOrdersPage = () => {
                 const config = {
                     headers: { Authorization: `Bearer ${userInfo.token}` },
                 };
-                const { data } = await axios.get('/api/orders/myorders', config);
+                // ✅ পরিবর্তন: API URL এখন ডাইনামিক
+                const { data } = await axios.get(`${API_URL}/api/orders/myorders`, config);
                 setOrders(data);
             } catch (err) {
                 setError("Could not fetch your orders. Please try again later.");
@@ -52,14 +52,14 @@ const MyOrdersPage = () => {
     }, [userInfo]);
     
     const handleCancelOrder = async (orderId) => {
-        // ... (অর্ডার বাতিল করার কোড অপরিবর্তিত থাকবে)
         if (window.confirm('আপনি কি নিশ্চিতভাবে এই অর্ডারটি বাতিল করতে চান?')) {
             setCancellingId(orderId);
             try {
                 const config = {
                     headers: { Authorization: `Bearer ${userInfo.token}` },
                 };
-                await axios.put(`/api/orders/${orderId}/cancel`, {}, config);
+                // ✅ পরিবর্তন: API URL এখন ডাইনামিক
+                await axios.put(`${API_URL}/api/orders/${orderId}/cancel`, {}, config);
                 setOrders(prevOrders =>
                     prevOrders.map(order =>
                         order._id === orderId ? { ...order, orderStatus: 'Cancelled' } : order
@@ -92,7 +92,6 @@ const MyOrdersPage = () => {
                 <div className="space-y-6">
                     {orders.map((order) => (
                         <div key={order._id} className="bg-white p-6 rounded-2xl shadow-md border border-gray-200">
-                            {/* Order ID, Status, and Items (অপরিবর্তিত) */}
                             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
                                 <div>
                                     <p className="text-sm text-gray-500">Order ID</p>
@@ -105,7 +104,8 @@ const MyOrdersPage = () => {
                             <div className="border-t pt-4 space-y-4">
                                 {order.orderItems.map(item => (
                                     <div key={item.product} className="flex items-center space-x-4">
-                                        <img src={`http://localhost:5000${item.image}`} alt={item.name} className="w-20 h-20 object-cover rounded-lg border"/>
+                                        {/* ✅ পরিবর্তন: ছবির URL এখন ডাইনামিক */}
+                                        <img src={`${API_URL}${item.image}`} alt={item.name} className="w-20 h-20 object-cover rounded-lg border"/>
                                         <div className="flex-1">
                                             <h3 className="text-lg font-bold text-gray-900">{item.name}</h3>
                                             <p className="text-sm text-gray-500">Quantity: {item.quantity}</p>
@@ -120,7 +120,6 @@ const MyOrdersPage = () => {
                                 </div>
                             )}
 
-                            {/* ✅✅✅ Order Footer: এই অংশটি রেসপন্সিভ করা হয়েছে ✅✅✅ */}
                             <div className="border-t mt-4 pt-4 space-y-4">
                                 <div className="flex justify-between items-center">
                                     <div>
@@ -148,9 +147,6 @@ const MyOrdersPage = () => {
                                             {cancellingId === order._id ? 'Cancelling...' : <><FiXCircle />Cancel Order</>}
                                         </button>
                                     ) : (
-                                        // যদি অর্ডার Pending না থাকে, তাহলে Cancel বাটনের জায়গা খালি থাকবে
-                                        // অথবা অন্য কোনো তথ্য দেখানো যেতে পারে।
-                                        // এখানে একটি খালি div দিয়ে গ্রিড ঠিক রাখা হয়েছে।
                                         <div></div>
                                     )}
                                 </div>

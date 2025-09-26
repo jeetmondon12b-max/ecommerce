@@ -3,8 +3,8 @@ import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate, useParams } from "react-router-dom";
 import { FiUploadCloud, FiX, FiPlusCircle } from 'react-icons/fi';
-// ✅ Toaster কম্পোনেন্টটি ইম্পোর্ট করুন
 import toast, { Toaster } from 'react-hot-toast';
+import { API_URL } from '../apiConfig'; // ✅ পরিবর্তন: API_URL ইম্পোর্ট করা হয়েছে
 
 const ProductForm = () => {
     const { id: productId } = useParams();
@@ -15,7 +15,7 @@ const ProductForm = () => {
         rating: "", numReviews: "",
     });
     
-    // ... বাকি সব state অপরিবর্তিত থাকবে ...
+    // ... Other states remain unchanged ...
     const [allCategories, setAllCategories] = useState([]);
     const [selectedCategories, setSelectedCategories] = useState([]);
     const [image, setImage] = useState(null);
@@ -38,11 +38,11 @@ const ProductForm = () => {
     const galleryInputRef = useRef(null);
     const standardSizeOptions = ['S', 'M', 'L', 'XL', 'XXL'];
 
-    // ... সব useEffect অপরিবর্তিত থাকবে ...
     useEffect(() => {
         const fetchPageCategories = async () => {
             try {
-                const { data } = await axios.get('/api/page-categories');
+                // ✅ পরিবর্তন: API URL এখন ডাইনামিক
+                const { data } = await axios.get(`${API_URL}/api/page-categories`);
                 if (data && Array.isArray(data.pageCategories)) {
                     setPageCategoryOptions(data.pageCategories);
                 } else {
@@ -59,7 +59,8 @@ const ProductForm = () => {
     useEffect(() => {
         const fetchAllCategories = async () => {
             try {
-                const { data } = await axios.get('/api/categories');
+                // ✅ পরিবর্তন: API URL এখন ডাইনামিক
+                const { data } = await axios.get(`${API_URL}/api/categories`);
                 setAllCategories(Array.isArray(data) ? data : []);
             } catch (error) {
                 toast.error('Failed to load product categories.');
@@ -72,7 +73,8 @@ const ProductForm = () => {
         if (isEditMode) {
             const fetchProduct = async () => {
                 try {
-                    const { data } = await axios.get(`/api/products/${productId}`);
+                    // ✅ পরিবর্তন: API URL এখন ডাইনামিক
+                    const { data } = await axios.get(`${API_URL}/api/products/${productId}`);
                     setFormData({
                         name: data.name || "",
                         brand: data.brand || "",
@@ -87,8 +89,9 @@ const ProductForm = () => {
                     if (data.categories && Array.isArray(data.categories)) {
                         setSelectedCategories(data.categories.map(cat => cat._id));
                     }
-                    setImagePreview(data.image ? `http://localhost:5000${data.image}`: "");
-                    setProductImagesPreview(data.productImages ? data.productImages.map(img => `http://localhost:5000${img}`) : []);
+                    // ✅ পরিবর্তন: ছবির URL এখন ডাইনামিক
+                    setImagePreview(data.image ? `${API_URL}${data.image}`: "");
+                    setProductImagesPreview(data.productImages ? data.productImages.map(img => `${API_URL}${img}`) : []);
                     setStandardSizes(data.sizes?.standard || []);
                     setCustomSizes(data.sizes?.custom || []);
                 } catch (error) {
@@ -99,7 +102,6 @@ const ProductForm = () => {
         }
     }, [productId, isEditMode]);
     
-    // ... সব handler ফাংশন অপরিবর্তিত থাকবে ...
     const handleChange = (e) => setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
     const handleDynamicCategoryChange = (e) => {
         const { value, checked } = e.target;
@@ -162,9 +164,16 @@ const ProductForm = () => {
         if (image) formDataToSend.append("image", image);
         productImages.forEach(file => formDataToSend.append("productImages", file));
 
-        const apiCall = isEditMode
-            ? axios.put(`/api/products/${productId}`, formDataToSend, { headers: { "Content-Type": "multipart/form-data", Authorization: `Bearer ${userInfo.token}` } })
-            : axios.post("/api/products", formDataToSend, { headers: { "Content-Type": "multipart/form-data", Authorization: `Bearer ${userInfo.token}` } });
+        // ✅ পরিবর্তন: API URL এখন ডাইনামিক
+        const url = isEditMode ? `${API_URL}/api/products/${productId}` : `${API_URL}/api/products`;
+        const method = isEditMode ? 'put' : 'post';
+        
+        const apiCall = axios[method](url, formDataToSend, { 
+            headers: { 
+                "Content-Type": "multipart/form-data", 
+                Authorization: `Bearer ${userInfo.token}` 
+            } 
+        });
         
         toast.promise(apiCall, {
             loading: isEditMode ? 'Updating product...' : 'Adding product...',
@@ -184,9 +193,7 @@ const ProductForm = () => {
 
     return (
         <div className="bg-white p-8 rounded-2xl shadow-lg">
-            {/* ✅✅✅ Toaster কম্পোনেন্টটি এখানে যোগ করা হয়েছে ✅✅✅ */}
             <Toaster position="top-center" />
-
             <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">{isEditMode ? 'Edit Product' : 'Add New Product'}</h2>
             
             <form onSubmit={handleSubmit} className="space-y-6">

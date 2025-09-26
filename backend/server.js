@@ -26,25 +26,29 @@ const app = express();
 
 app.set('trust proxy', 1);
 
-// --- CORS CONFIGURATION (THE FIX IS HERE) ---
-// We are specifying exactly which frontend URL is allowed to make requests.
-const allowedOrigins = ['https://ecommerce-2-csj6.onrender.com']; // Your Frontend URL
+// --- FINAL CORS CONFIGURATION (FOR LOCAL & LIVE) ---
+const allowedOrigins = [
+  'https://ecommerce-2-ro8h.onrender.com', // Your LIVE Frontend URL
+  'http://localhost:5173'                 // Your LOCAL Frontend URL
+];
 
 const corsOptions = {
   origin: function (origin, callback) {
-    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      return callback(new Error(msg), false);
     }
+    return callback(null, true);
   },
 };
 
 // Core Middleware
-app.use(cors(corsOptions)); // Use the specific cors options here
+app.use(cors(corsOptions)); 
 app.use(express.json());
 
-// Static Folder for Image Uploads - Using process.cwd() for a robust path
+// Static Folder for Image Uploads
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 // API Routes

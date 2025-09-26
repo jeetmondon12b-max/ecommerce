@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import toast from 'react-hot-toast';
+import toast, { Toaster } from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext.jsx';
 import { FiTrash2, FiUploadCloud, FiLink, FiImage, FiPlus } from 'react-icons/fi';
+import { API_URL } from '../apiConfig.js'; // ✅ পরিবর্তন: API_URL ইম্পোর্ট করা হয়েছে
 
 const AdminBannerPage = () => {
     const [banners, setBanners] = useState([]);
@@ -18,7 +19,8 @@ const AdminBannerPage = () => {
     const fetchBanners = async () => {
         try {
             setLoading(true);
-            const { data } = await axios.get('/api/banners');
+            // ✅ পরিবর্তন: API URL এখন ডাইনামিক
+            const { data } = await axios.get(`${API_URL}/api/banners`);
             setBanners(data.banners || []);
         } catch (error) {
             toast.error('Failed to load banners.');
@@ -65,7 +67,8 @@ const AdminBannerPage = () => {
 
         const config = { headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${userInfo.token}` } };
 
-        toast.promise(axios.post('/api/banners', data, config), {
+        // ✅ পরিবর্তন: API URL এখন ডাইনামিক
+        toast.promise(axios.post(`${API_URL}/api/banners`, data, config), {
             loading: 'Creating banner...',
             success: () => {
                 fetchBanners();
@@ -83,7 +86,8 @@ const AdminBannerPage = () => {
     const handleDelete = (id) => {
         if (window.confirm('Are you sure you want to delete this banner?')) {
             const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
-            toast.promise(axios.delete(`/api/banners/${id}`, config), {
+            // ✅ পরিবর্তন: API URL এখন ডাইনামিক
+            toast.promise(axios.delete(`${API_URL}/api/banners/${id}`, config), {
                 loading: 'Deleting banner...',
                 success: () => {
                     fetchBanners();
@@ -96,6 +100,7 @@ const AdminBannerPage = () => {
     
     return (
         <div className="p-4 sm:p-6 bg-gray-50 min-h-screen">
+            <Toaster position="top-center" />
             <h1 className="text-3xl font-bold mb-6 text-gray-800">Manage Homepage Banners</h1>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -154,7 +159,8 @@ const AdminBannerPage = () => {
                                 {banners.length > 0 ? banners.map(banner => (
                                     <div key={banner._id} className="border rounded-lg p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
                                         <div className="flex items-center gap-4">
-                                            <img src={`http://localhost:5000${banner.image}`} alt={banner.title} className="w-28 h-16 object-cover rounded"/>
+                                            {/* ✅ পরিবর্তন: ছবির URL এখন ডাইনামিক */}
+                                            <img src={`${API_URL}${banner.image}`} alt={banner.title} className="w-28 h-16 object-cover rounded"/>
                                             <div>
                                                 <p className="font-bold text-gray-800">{banner.title || 'No Title'}</p>
                                                 <p className="text-sm text-gray-500 flex items-center gap-1"><FiLink size={12} /> {banner.link || 'No Link'}</p>

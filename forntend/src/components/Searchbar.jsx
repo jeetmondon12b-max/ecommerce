@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { FiSearch, FiChevronDown } from 'react-icons/fi';
+import { API_URL } from '../apiConfig'; // ✅ পরিবর্তন: API_URL ইম্পোর্ট করা হয়েছে
 
 const Searchbar = () => {
     const [category, setCategory] = useState('All');
@@ -20,7 +21,8 @@ const Searchbar = () => {
         }
         const debounceTimer = setTimeout(async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/api/products/suggestions?q=${searchQuery}`);
+                // ✅ পরিবর্তন: API URL এখন ডাইনামিক। localhost-এর পরিবর্তে API_URL ব্যবহার করা হয়েছে।
+                const response = await axios.get(`${API_URL}/api/products/suggestions?q=${searchQuery}`);
                 setSuggestions(response.data);
             } catch (error) {
                 console.error("Failed to fetch suggestions:", error);
@@ -29,8 +31,21 @@ const Searchbar = () => {
         return () => clearTimeout(debounceTimer);
     }, [searchQuery]);
 
+    // Click outside handler (to close dropdowns)
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (searchContainerRef.current && !searchContainerRef.current.contains(event.target)) {
+                setDropdownOpen(false);
+                setSuggestions([]);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
     const handleSearch = (query) => {
         if (query.trim() === '') return;
+        setSearchQuery(query); // update search bar with the clicked suggestion
         setSuggestions([]);
         navigate(`/search?q=${encodeURIComponent(query)}&category=${encodeURIComponent(category)}`);
     };
@@ -40,7 +55,7 @@ const Searchbar = () => {
             <div className="relative flex w-full bg-white rounded-full shadow-lg border">
                 {/* Category Dropdown */}
                 <div className="relative">
-                    <button onClick={() => setDropdownOpen(!isDropdownOpen)} className="flex items-center justify-between h-full px-6 py-3 text-sm font-semibold text-gray-700 bg-gray-100 rounded-l-full">
+                    <button onClick={() => setDropdownOpen(!isDropdownOpen)} className="flex items-center justify-between h-full px-6 py-3 text-sm font-semibold text-gray-700 bg-gray-100 rounded-l-full focus:outline-none">
                         <span>{category}</span>
                         <FiChevronDown className={`ml-2 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
                     </button>
@@ -66,7 +81,7 @@ const Searchbar = () => {
                         onKeyPress={(e) => e.key === 'Enter' && handleSearch(searchQuery)}
                     />
                 </div>
-                <button onClick={() => handleSearch(searchQuery)} className="px-8 py-3 font-bold text-white bg-indigo-600 rounded-r-full hover:bg-indigo-700">
+                <button onClick={() => handleSearch(searchQuery)} className="px-8 py-3 font-bold text-white bg-indigo-600 rounded-r-full hover:bg-indigo-700 focus:outline-none">
                     Search
                 </button>
             </div>

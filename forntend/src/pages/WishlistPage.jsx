@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext.jsx';
 import { Link } from 'react-router-dom';
 import { FiHeart, FiTrash2, FiLoader } from 'react-icons/fi';
 import toast, { Toaster } from 'react-hot-toast';
+import { API_URL } from '../apiConfig.js'; // ✅ পরিবর্তন: API_URL ইম্পোর্ট করা হয়েছে
 
 const WishlistPage = () => {
     const [wishlist, setWishlist] = useState([]);
@@ -18,7 +19,8 @@ const WishlistPage = () => {
         try {
             setLoading(true);
             const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
-            const { data } = await axios.get('/api/wishlist/mywishlist', config);
+            // ✅ পরিবর্তন: API URL এখন ডাইনামিক
+            const { data } = await axios.get(`${API_URL}/api/wishlist/mywishlist`, config);
             setWishlist(data);
         } catch (error) {
             toast.error("Could not load your wishlist.");
@@ -34,7 +36,8 @@ const WishlistPage = () => {
     const handleRemove = async (productId) => {
         const promise = async () => {
             const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
-            await axios.delete(`/api/wishlist/${productId}`, config);
+            // ✅ পরিবর্তন: API URL এখন ডাইনামিক
+            await axios.delete(`${API_URL}/api/wishlist/${productId}`, config);
             // Optimistic UI update
             setWishlist((prev) => prev.filter(item => item.product._id !== productId));
         };
@@ -67,22 +70,23 @@ const WishlistPage = () => {
                 <div className="space-y-4">
                     {wishlist.map(({ product }) => (
                          <div key={product._id} className="bg-white p-4 rounded-lg shadow-md flex flex-col sm:flex-row items-center justify-between gap-4 hover:shadow-lg transition-shadow">
-                            <Link to={`/product/${product._id}`} className="flex items-center gap-4 w-full">
-                                <img src={`http://localhost:5000${product.image}`} alt={product.name} className="w-20 h-20 object-cover rounded-md flex-shrink-0"/>
-                                <div className="min-w-0">
-                                    <h3 className="font-bold text-lg text-gray-800 break-words">{product.name}</h3>
-                                    <p className="text-indigo-600 font-semibold">৳{product.discountPrice || product.regularPrice}</p>
-                                </div>
-                            </Link>
-                            <button 
-                                onClick={() => handleRemove(product._id)} 
-                                className="w-full sm:w-auto flex-shrink-0 flex items-center justify-center gap-2 text-red-500 bg-red-50 hover:bg-red-100 p-2 rounded-md transition-colors"
-                                title="Remove from wishlist"
-                            >
-                                <FiTrash2 size={18} />
-                                <span className="sm:hidden font-semibold">Remove</span>
-                            </button>
-                         </div>
+                             <Link to={`/product/${product._id}`} className="flex items-center gap-4 w-full">
+                                 {/* ✅ পরিবর্তন: ছবির URL এখন ডাইনামিক */}
+                                 <img src={`${API_URL}${product.image}`} alt={product.name} className="w-20 h-20 object-cover rounded-md flex-shrink-0"/>
+                                 <div className="min-w-0">
+                                     <h3 className="font-bold text-lg text-gray-800 break-words">{product.name}</h3>
+                                     <p className="text-indigo-600 font-semibold">৳{product.discountPrice || product.regularPrice}</p>
+                                 </div>
+                             </Link>
+                             <button 
+                                 onClick={() => handleRemove(product._id)} 
+                                 className="w-full sm:w-auto flex-shrink-0 flex items-center justify-center gap-2 text-red-500 bg-red-50 hover:bg-red-100 p-2 rounded-md transition-colors"
+                                 title="Remove from wishlist"
+                             >
+                                 <FiTrash2 size={18} />
+                                 <span className="sm:hidden font-semibold">Remove</span>
+                             </button>
+                           </div>
                     ))}
                 </div>
             )}

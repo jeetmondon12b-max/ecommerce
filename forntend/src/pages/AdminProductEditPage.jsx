@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext.jsx';
 import toast, { Toaster } from 'react-hot-toast';
+import { API_URL } from '../apiConfig.js'; // ✅ পরিবর্তন: API_URL ইম্পোর্ট করা হয়েছে
 
 const AdminProductEditPage = () => {
     const { id } = useParams(); // 'new' for creating, or an ID for editing
@@ -21,7 +22,8 @@ const AdminProductEditPage = () => {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const { data } = await axios.get('http://localhost:5000/api/categories');
+                // ✅ পরিবর্তন: API URL এখন ডাইনামিক
+                const { data } = await axios.get(`${API_URL}/api/categories`);
                 setAllCategories(data);
             } catch (error) {
                 toast.error('Could not fetch categories.');
@@ -36,7 +38,8 @@ const AdminProductEditPage = () => {
             setLoading(true);
             const fetchProduct = async () => {
                 try {
-                    const { data } = await axios.get(`http://localhost:5000/api/products/${id}`);
+                    // ✅ পরিবর্তন: API URL এখন ডাইনামিক
+                    const { data } = await axios.get(`${API_URL}/api/products/${id}`);
                     setProduct(data);
                     // প্রোডাক্টের ক্যাটাগরি আইডিগুলো selectedCategories-এ সেট করা হচ্ছে
                     setSelectedCategories(data.categories.map(cat => cat._id));
@@ -78,14 +81,15 @@ const AdminProductEditPage = () => {
             formData.append('image', image);
         }
 
-        // ক্যাটাগরি আইডিগুলো কমা দিয়ে যুক্ত করে পাঠানো হচ্ছে
+        // ক্যাটাগরি আইডিগুলো কমা দিয়ে যুক্ত করে পাঠানো হচ্ছে
         formData.append('categories', selectedCategories.join(','));
 
         const config = { headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${userInfo.token}` } };
         
+        // ✅ পরিবর্তন: API URL এখন ডাইনামিক
         const apiCall = id === 'new'
-            ? axios.post('http://localhost:5000/api/products', formData, config)
-            : axios.put(`http://localhost:5000/api/products/${id}`, formData, config);
+            ? axios.post(`${API_URL}/api/products`, formData, config)
+            : axios.put(`${API_URL}/api/products/${id}`, formData, config);
 
         toast.promise(apiCall, {
             loading: 'Saving product...',

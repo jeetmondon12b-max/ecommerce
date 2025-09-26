@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import toast, { Toaster } from 'react-hot-toast';
+import { API_URL } from '../apiConfig'; // ✅ পরিবর্তন: API_URL ইম্পোর্ট করা হয়েছে
 
 const CouponForm = () => {
     const [couponData, setCouponData] = useState({
@@ -32,7 +33,8 @@ const CouponForm = () => {
                     Authorization: `Bearer ${userInfo.token}`,
                 },
             };
-            const response = await axios.post('http://localhost:5000/api/coupons', couponData, config);
+            // ✅ পরিবর্তন: API URL এখন ডাইনামিক। localhost:5000 এর পরিবর্তে API_URL ব্যবহার করা হয়েছে।
+            const response = await axios.post(`${API_URL}/api/coupons`, couponData, config);
             
             toast.success(response.data.message || 'Coupon created successfully!', { id: toastId });
             setCouponData({ code: '', discount: '', minimumAmount: '', expiresAt: '', usageLimit: '' });

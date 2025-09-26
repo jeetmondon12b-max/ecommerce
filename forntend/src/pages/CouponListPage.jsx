@@ -1,27 +1,29 @@
 import React from 'react';
-// ✅ useMutation ও useQueryClient ইম্পোর্ট করুন
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext.jsx';
 import { FiTag, FiCalendar, FiLoader, FiAlertCircle, FiTrash2 } from 'react-icons/fi';
-import toast from 'react-hot-toast'; // ✅ toast নোটিফিকেশনের জন্য
+import toast from 'react-hot-toast';
+import { API_URL } from '../apiConfig.js'; // ✅ পরিবর্তন: API_URL ইম্পোর্ট করা হয়েছে
 
-// API থেকে কুপন আনার ফাংশন (অপরিবর্তিত)
+// API থেকে কুপন আনার ফাংশন
 const fetchCoupons = async (token) => {
     const config = { headers: { Authorization: `Bearer ${token}` } };
-    const { data } = await axios.get('http://localhost:5000/api/coupons', config);
+    // ✅ পরিবর্তন: API URL এখন ডাইনামিক
+    const { data } = await axios.get(`${API_URL}/api/coupons`, config);
     return data || [];
 };
 
-// ✅ কুপন ডিলেট করার জন্য নতুন async ফাংশন
+// কুপন ডিলেট করার জন্য নতুন async ফাংশন
 const deleteCouponAPI = async ({ couponId, token }) => {
     const config = { headers: { Authorization: `Bearer ${token}` } };
-    await axios.delete(`http://localhost:5000/api/coupons/${couponId}`, config);
+    // ✅ পরিবর্তন: API URL এখন ডাইনামিক
+    await axios.delete(`${API_URL}/api/coupons/${couponId}`, config);
 };
 
 const CouponListPage = () => {
     const { userInfo } = useAuth();
-    const queryClient = useQueryClient(); // ✅ QueryClient Instance
+    const queryClient = useQueryClient();
 
     const { data: coupons, isLoading, isError, error } = useQuery({
         queryKey: ['coupons'],
@@ -29,12 +31,11 @@ const CouponListPage = () => {
         enabled: !!userInfo,
     });
 
-    // ✅ ডিলেট অপারেশনের জন্য useMutation হুক
+    // ডিলেট অপারেশনের জন্য useMutation হুক
     const deleteMutation = useMutation({
         mutationFn: deleteCouponAPI,
         onSuccess: () => {
             toast.success('Coupon deleted successfully!');
-            // ডিলেট সফল হলে কুপন লিস্ট রিফ্রেশ করার জন্য কোয়েরি ইনভ্যালিডেট করা হচ্ছে
             queryClient.invalidateQueries({ queryKey: ['coupons'] });
         },
         onError: (err) => {
@@ -42,7 +43,7 @@ const CouponListPage = () => {
         },
     });
 
-    // ✅ ডিলেট বাটনে ক্লিক করলে এই ফাংশনটি কল হবে
+    // ডিলেট বাটনে ক্লিক করলে এই ফাংশনটি কল হবে
     const handleDelete = (couponId) => {
         if (window.confirm('Are you sure you want to delete this coupon?')) {
             deleteMutation.mutate({ couponId, token: userInfo.token });
@@ -72,14 +73,12 @@ const CouponListPage = () => {
                             <th className="py-3 px-4 text-left text-sm font-semibold text-gray-600 uppercase">Min. Purchase</th>
                             <th className="py-3 px-4 text-center text-sm font-semibold text-gray-600 uppercase">Usage</th>
                             <th className="py-3 px-4 text-left text-sm font-semibold text-gray-600 uppercase">Dates</th>
-                            {/* ✅ Action কলাম যোগ করা হয়েছে */}
                             <th className="py-3 px-4 text-center text-sm font-semibold text-gray-600 uppercase">Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         {coupons && coupons.map(coupon => (
                             <tr key={coupon._id} className="block md:table-row mb-4 md:mb-0 border md:border-none rounded-lg shadow-md md:shadow-none">
-                                {/* ... অন্যান্য কলাম অপরিবর্তিত থাকবে ... */}
                                 <td className="p-4 flex justify-between items-center md:table-cell border-b md:border-b-0">
                                     <span className="font-bold md:hidden">Code:</span>
                                     <div className="flex items-center gap-2">
@@ -106,7 +105,6 @@ const CouponListPage = () => {
                                         <span className="text-xs font-semibold text-red-600">Expires: {formatDate(coupon.expiresAt)}</span>
                                     </div>
                                 </td>
-                                {/* ✅ Action/Delete বাটন যোগ করা হয়েছে */}
                                 <td className="p-4 flex justify-between items-center md:table-cell md:text-center">
                                     <span className="font-bold md:hidden">Action:</span>
                                     <button 

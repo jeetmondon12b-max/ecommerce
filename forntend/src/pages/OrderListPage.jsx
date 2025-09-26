@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext.jsx';
 import OrderStatusTracker from '../components/OrderStatusTracker.jsx';
 import { FiChevronDown, FiChevronUp, FiEye, FiSearch, FiLoader } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
+import { API_URL } from '../apiConfig.js'; // ✅ পরিবর্তন: API_URL ইম্পোর্ট করা হয়েছে
 
 const getStatusColor = (status) => {
     switch (status) {
@@ -22,7 +23,8 @@ const ExpandedOrderDetails = ({ order }) => (
         <div className="space-y-4 mb-4">
             {order.orderItems.map((item, index) => (
                 <div key={index} className="flex items-center gap-4 pb-4 border-b last:border-b-0">
-                    <img src={`http://localhost:5000${item.image}`} alt={item.name} className="w-16 h-16 object-cover rounded-lg"/>
+                    {/* ✅ পরিবর্তন: ছবির URL এখন ডাইনামিক */}
+                    <img src={`${API_URL}${item.image}`} alt={item.name} className="w-16 h-16 object-cover rounded-lg"/>
                     <div className="flex-grow">
                         <p className="font-semibold text-gray-800">{item.name}</p>
                         {item.size && <p className="text-sm text-gray-600"><strong>Size:</strong> {item.size}</p>}
@@ -100,7 +102,8 @@ const OrderListPage = () => {
         const fetchOrders = async () => {
             try {
                 const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
-                const { data } = await axios.get('/api/orders', config);
+                // ✅ পরিবর্তন: API URL এখন ডাইনামিক
+                const { data } = await axios.get(`${API_URL}/api/orders`, config);
                 setOrders(data);
             } catch (error) {
                 console.error("Failed to fetch orders", error);
@@ -114,7 +117,8 @@ const OrderListPage = () => {
     const handleStatusChange = async (orderId, newStatus) => {
         try {
             const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
-            await axios.put(`/api/orders/${orderId}/status`, { status: newStatus }, config);
+            // ✅ পরিবর্তন: API URL এখন ডাইনামিক
+            await axios.put(`${API_URL}/api/orders/${orderId}/status`, { status: newStatus }, config);
             setOrders(prevOrders => prevOrders.map(order => order._id === orderId ? { ...order, orderStatus: newStatus } : order));
         } catch (error) {
             alert("Status update failed!");

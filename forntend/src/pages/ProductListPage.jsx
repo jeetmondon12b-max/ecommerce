@@ -5,17 +5,20 @@ import { useAuth } from '../context/AuthContext.jsx';
 import { Link, useNavigate } from 'react-router-dom';
 import { FiEdit, FiTrash2, FiPlusCircle, FiAlertCircle } from 'react-icons/fi';
 import toast from 'react-hot-toast';
+import { API_URL } from '../apiConfig.js'; // ✅ পরিবর্তন: API_URL ইম্পোর্ট করা হয়েছে
 
 // API থেকে প্রোডাক্ট আনার জন্য একটি async ফাংশন
 const fetchProducts = async () => {
-    const { data } = await axios.get('http://localhost:5000/api/products');
+    // ✅ পরিবর্তন: API URL এখন ডাইনামিক
+    const { data } = await axios.get(`${API_URL}/api/products`);
     return data.products || [];
 };
 
 // প্রোডাক্ট ডিলিট করার জন্য একটি async ফাংশন
 const deleteProduct = async ({ productId, token }) => {
     const config = { headers: { Authorization: `Bearer ${token}` } };
-    await axios.delete(`http://localhost:5000/api/products/${productId}`, config);
+    // ✅ পরিবর্তন: API URL এখন ডাইনামিক
+    await axios.delete(`${API_URL}/api/products/${productId}`, config);
 };
 
 const ProductListPage = () => {
@@ -67,10 +70,8 @@ const ProductListPage = () => {
                 </Link>
             </div>
 
-            {/* Main container for the responsive table/card list */}
             <div className="overflow-x-auto">
                 <table className="min-w-full bg-white">
-                    {/* Table header - hidden on mobile, visible on medium screens and up */}
                     <thead className="bg-gray-50 hidden md:table-header-group">
                         <tr>
                             <th className="py-3 px-4 text-left text-sm font-semibold text-gray-600 uppercase">Product</th>
@@ -81,16 +82,14 @@ const ProductListPage = () => {
                         </tr>
                     </thead>
                     
-                    {/* Table body - items will stack on mobile */}
                     <tbody className="divide-y divide-gray-200 md:divide-y-0">
                         {products && products.map(product => (
-                            // Each row becomes a card on mobile
                             <tr key={product._id} className="block md:table-row mb-4 md:mb-0 border md:border-none rounded-lg md:rounded-none shadow-md md:shadow-none">
                                 
-                                {/* Product Cell */}
                                 <td className="p-4 flex items-center gap-4 border-b md:border-b-0 md:table-cell">
+                                    {/* ✅ পরিবর্তন: ছবির URL এখন ডাইনামিক */}
                                     <img
-                                        src={`http://localhost:5000${product.image}`}
+                                        src={`${API_URL}${product.image}`}
                                         alt={product.name}
                                         className="w-16 h-16 object-cover rounded-md border"
                                     />
@@ -100,7 +99,6 @@ const ProductListPage = () => {
                                     </div>
                                 </td>
 
-                                {/* Categories Cell */}
                                 <td className="p-4 flex justify-between items-center border-b md:border-b-0 md:table-cell">
                                     <span className="font-bold text-gray-600 md:hidden">Categories:</span>
                                     <span className="text-gray-600 text-right">
@@ -108,7 +106,6 @@ const ProductListPage = () => {
                                     </span>
                                 </td>
 
-                                {/* Stock Cell */}
                                 <td className="p-4 flex justify-between items-center border-b md:border-b-0 md:table-cell md:text-center">
                                     <span className="font-bold text-gray-600 md:hidden">Stock:</span>
                                     {product.countInStock > 0 ? (
@@ -118,7 +115,6 @@ const ProductListPage = () => {
                                     )}
                                 </td>
                                 
-                                {/* Price Cell */}
                                 <td className="p-4 flex justify-between items-center border-b md:border-b-0 md:table-cell">
                                     <span className="font-bold text-gray-600 md:hidden">Price:</span>
                                     {product.discountPrice ? (
@@ -131,7 +127,6 @@ const ProductListPage = () => {
                                     )}
                                 </td>
 
-                                {/* Actions Cell */}
                                 <td className="p-4 flex justify-between items-center md:table-cell md:text-center">
                                     <span className="font-bold text-gray-600 md:hidden">Actions:</span>
                                     <div className="flex justify-center items-center gap-4">
@@ -146,7 +141,7 @@ const ProductListPage = () => {
                                             onClick={() => handleDelete(product._id)}
                                             className="text-gray-400 hover:text-red-600 transition-colors p-2 rounded-full hover:bg-red-50"
                                             title="Delete Product"
-                                            disabled={deleteMutation.isPending} // Updated from isLoading for v5
+                                            disabled={deleteMutation.isPending}
                                         >
                                             <FiTrash2 size={20} />
                                         </button>

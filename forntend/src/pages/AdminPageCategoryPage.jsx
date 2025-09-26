@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import toast from 'react-hot-toast';
+import toast, { Toaster } from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext.jsx';
 import { FiEdit, FiTrash2, FiUploadCloud } from 'react-icons/fi';
+import { API_URL } from '../apiConfig.js'; // ✅ পরিবর্তন: API_URL ইম্পোর্ট করা হয়েছে
 
 const AdminPageCategoryPage = () => {
     const [pageCategories, setPageCategories] = useState([]);
@@ -17,7 +18,8 @@ const AdminPageCategoryPage = () => {
     const fetchPageCategories = async () => {
         try {
             setLoading(true);
-            const { data } = await axios.get('/api/page-categories');
+            // ✅ পরিবর্তন: API URL এখন ডাইনামিক
+            const { data } = await axios.get(`${API_URL}/api/page-categories`);
             if (data && Array.isArray(data.pageCategories)) {
                 setPageCategories(data.pageCategories);
             } else {
@@ -71,9 +73,10 @@ const AdminPageCategoryPage = () => {
             },
         };
 
+        // ✅ পরিবর্তন: API URL এখন ডাইনামিক
         const apiCall = editingCategory
-            ? axios.put(`/api/page-categories/${editingCategory._id}`, formData, config)
-            : axios.post('/api/page-categories', formData, config);
+            ? axios.put(`${API_URL}/api/page-categories/${editingCategory._id}`, formData, config)
+            : axios.post(`${API_URL}/api/page-categories`, formData, config);
 
         toast.promise(apiCall, {
             loading: editingCategory ? 'Updating category...' : 'Creating category...',
@@ -90,7 +93,8 @@ const AdminPageCategoryPage = () => {
     const handleEdit = (category) => {
         setEditingCategory(category);
         setName(category.name);
-        setImagePreview(`http://localhost:5000${category.image}`);
+        // ✅ পরিবর্তন: ছবির URL এখন ডাইনামিক
+        setImagePreview(`${API_URL}${category.image}`);
         setImage(null);
         window.scrollTo(0, 0);
     };
@@ -99,7 +103,8 @@ const AdminPageCategoryPage = () => {
     const handleDelete = (id) => {
         if (window.confirm('Are you sure you want to delete this category?')) {
             const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
-            const apiCall = axios.delete(`/api/page-categories/${id}`, config);
+            // ✅ পরিবর্তন: API URL এখন ডাইনামিক
+            const apiCall = axios.delete(`${API_URL}/api/page-categories/${id}`, config);
             toast.promise(apiCall, {
                 loading: 'Deleting category...',
                 success: () => {
@@ -113,9 +118,10 @@ const AdminPageCategoryPage = () => {
     
     return (
         <div className="p-4 sm:p-6 bg-gray-50 min-h-screen">
+             <Toaster position="top-center" />
             <h1 className="text-3xl font-bold mb-6 text-gray-800">Manage Page Categories</h1>
 
-            {/* ✅ সুন্দর লেআউটের জন্য Grid ব্যবহার করা হয়েছে */}
+            {/* ✅ সুন্দর লেআউটের জন্য Grid ব্যবহার করা হয়েছে */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 
                 {/* বাম পাশের কলাম: ফর্ম */}
@@ -165,7 +171,8 @@ const AdminPageCategoryPage = () => {
                                     {pageCategories.map(cat => (
                                         <div key={cat._id} className="text-center group">
                                             <div className="relative">
-                                                <img src={`http://localhost:5000${cat.image}`} alt={cat.name} className="w-28 h-28 rounded-full mx-auto object-cover border-2 border-gray-200" />
+                                                {/* ✅ পরিবর্তন: ছবির URL এখন ডাইনামিক */}
+                                                <img src={`${API_URL}${cat.image}`} alt={cat.name} className="w-28 h-28 rounded-full mx-auto object-cover border-2 border-gray-200" />
                                                 <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 rounded-full transition-all flex items-center justify-center space-x-3">
                                                     <button onClick={() => handleEdit(cat)} className="btn btn-sm btn-circle btn-info opacity-0 group-hover:opacity-100"><FiEdit /></button>
                                                     <button onClick={() => handleDelete(cat._id)} className="btn btn-sm btn-circle btn-error opacity-0 group-hover:opacity-100"><FiTrash2 /></button>

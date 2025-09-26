@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext.jsx';
 import { useCart } from '../context/CartContext.jsx';
 import { FaShoppingCart, FaShippingFast, FaCheckCircle, FaHeart } from 'react-icons/fa';
 import toast, { Toaster } from 'react-hot-toast';
+import { API_URL } from '../apiConfig.js'; // ✅ পরিবর্তন: API_URL ইম্পোর্ট করা হয়েছে
 
 // Skeleton Loader Component
 const ProductDetailSkeleton = () => (
@@ -54,10 +55,12 @@ export default function ProductDetailsPage() {
         const fetchProduct = async () => {
             try {
                 setLoading(true);
-                const { data } = await axios.get(`http://localhost:5000/api/products/${id}`);
+                // ✅ পরিবর্তন: API URL এখন ডাইনামিক
+                const { data } = await axios.get(`${API_URL}/api/products/${id}`);
                 setProduct(data);
                 if (data.image) {
-                    setMainImage(`http://localhost:5000${data.image}`);
+                    // ✅ পরিবর্তন: ছবির URL এখন ডাইনামিক
+                    setMainImage(`${API_URL}${data.image}`);
                 }
             } catch (error) {
                 toast.error("Failed to load product details.");
@@ -69,7 +72,6 @@ export default function ProductDetailsPage() {
         fetchProduct();
     }, [id]);
     
-    // কার্টে যোগ করার চূড়ান্ত সঠিক লজিক
     const handleAddToCart = () => {
         const hasSizes = (product.sizes?.standard?.length > 0 || product.sizes?.custom?.length > 0);
         if (hasSizes && !selectedSize && !selectedCustomSize.value) {
@@ -88,7 +90,6 @@ export default function ProductDetailsPage() {
         toast.success(`${product.name} added to cart!`);
     };
 
-    // এখনই অর্ডার করার চূড়ান্ত সঠিক লজিক
     const handleOrderNow = () => {
         if (!userInfo) {
             navigate('/login', { state: { from: location } });
@@ -109,7 +110,6 @@ export default function ProductDetailsPage() {
             customSize: selectedCustomSize.value ? selectedCustomSize : undefined,
         };
         
-        // Checkout পেজে ডেটা পাঠানোর জন্য এখন 'items' ব্যবহার করা হচ্ছে
         navigate("/checkout", { state: { items: [productForCheckout] } });
     };
 
@@ -121,7 +121,8 @@ export default function ProductDetailsPage() {
         }
         try {
             const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
-            await axios.post('http://localhost:5000/api/wishlist', { productId: product._id }, config);
+            // ✅ পরিবর্তন: API URL এখন ডাইনামিক
+            await axios.post(`${API_URL}/api/wishlist`, { productId: product._id }, config);
             toast.success('Added to your wishlist!');
         } catch (error) {
             toast.error(error.response?.data?.message || 'Could not add to wishlist.');
@@ -158,9 +159,13 @@ export default function ProductDetailsPage() {
                         </div>
                         <div className="flex gap-3 overflow-x-auto pb-2">
                             {allImages.map((img, index) => (
-                                <img key={index} src={`http://localhost:5000${img}`} alt={`gallery-${index}`}
+                                <img key={index} 
+                                    // ✅ পরিবর্তন: ছবির URL এখন ডাইনামিক
+                                    src={`${API_URL}${img}`} 
+                                    alt={`gallery-${index}`}
                                     className={`flex-shrink-0 w-20 h-20 object-cover rounded-md cursor-pointer border-2 transition-all ${mainImage.includes(img) ? 'border-indigo-500 scale-105' : 'border-transparent hover:border-gray-300'}`}
-                                    onClick={() => setMainImage(`http://localhost:5000${img}`)}
+                                    // ✅ পরিবর্তন: ছবির URL এখন ডাইনামিক
+                                    onClick={() => setMainImage(`${API_URL}${img}`)}
                                 />
                             ))}
                         </div>

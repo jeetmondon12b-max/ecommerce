@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext.jsx';
 import { FiClipboard, FiUser, FiTruck, FiCreditCard } from 'react-icons/fi';
+import { API_URL } from '../apiConfig.js'; // ✅ পরিবর্তন: API_URL ইম্পোর্ট করা হয়েছে
 
 const OrderDetailsPage = () => {
     const { id: orderId } = useParams();
@@ -15,7 +16,8 @@ const OrderDetailsPage = () => {
         const fetchOrderDetails = async () => {
             try {
                 const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
-                const { data } = await axios.get(`http://localhost:5000/api/orders/${orderId}`, config);
+                // ✅ পরিবর্তন: API URL এখন ডাইনামিক
+                const { data } = await axios.get(`${API_URL}/api/orders/${orderId}`, config);
                 setOrder(data);
             } catch (err) {
                 setError('Failed to fetch order details.');
@@ -50,7 +52,8 @@ const OrderDetailsPage = () => {
                             <div className="space-y-4">
                                 {orderItems.map((item) => (
                                     <div key={item._id} className="flex items-start gap-4 border-b pb-4 last:border-b-0">
-                                        <img src={`http://localhost:5000${item.image}`} alt={item.name} className="w-24 h-24 object-cover rounded-md border" />
+                                        {/* ✅ পরিবর্তন: ছবির URL এখন ডাইনামিক */}
+                                        <img src={`${API_URL}${item.image}`} alt={item.name} className="w-24 h-24 object-cover rounded-md border" />
                                         <div className="flex-grow">
                                             <p className="font-bold text-lg text-gray-900">{item.name}</p>
                                             {item.size && <p className="text-sm text-gray-600"><strong>Size:</strong> {item.size}</p>}
@@ -72,9 +75,9 @@ const OrderDetailsPage = () => {
                         <div className="bg-white p-6 rounded-lg shadow-md">
                              <h2 className="text-xl font-semibold mb-4 flex items-center gap-2"><FiUser /> Customer Details</h2>
                              <div className="space-y-2 text-gray-700">
-                                <p><strong>Name:</strong> {customerInfo.fullName}</p>
-                                <p><strong>Email:</strong> {order.user.email}</p>
-                                <p><strong>Phone:</strong> {customerInfo.phone}</p>
+                                 <p><strong>Name:</strong> {customerInfo.fullName}</p>
+                                 <p><strong>Email:</strong> {order.user.email}</p>
+                                 <p><strong>Phone:</strong> {customerInfo.phone}</p>
                              </div>
                         </div>
                         <div className="bg-white p-6 rounded-lg shadow-md">

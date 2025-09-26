@@ -2,21 +2,20 @@ import { useState } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import { FiTag, FiTruck } from "react-icons/fi";
+import { API_URL } from '../apiConfig'; // ✅ পরিবর্তন: API_URL ইম্পোর্ট করা হয়েছে
 
 export default function CheckoutPage() {
     const location = useLocation();
     const navigate = useNavigate();
 
-    // ✅ সমাধান: এখানে 'product' এর পরিবর্তে 'singleItem' চেক করা হয়েছে
-    // এখন এটি কার্ট পেজ থেকে আসা `items` এবং ডিটেইলস পেজ থেকে আসা `singleItem` উভয়ই গ্রহণ করতে পারবে।
+    // এখন এটি কার্ট পেজ থেকে আসা `items` এবং ডিটেইলস পেজ থেকে আসা `singleItem` উভয়ই গ্রহণ করতে পারবে।
     let itemsToCheckout = [];
     if (location.state?.items && Array.isArray(location.state.items)) {
         itemsToCheckout = location.state.items;
-    } else if (location.state?.singleItem) { // <--- পরিবর্তন এখানে
-        itemsToCheckout = [location.state.singleItem]; // <--- পরিবর্তন এখানে
+    } else if (location.state?.singleItem) {
+        itemsToCheckout = [location.state.singleItem];
     }
 
-    // আপনার state গুলো আগের মতোই রাখা হয়েছে
     const [shippingOption, setShippingOption] = useState("inside_dhaka");
     const [coupon, setCoupon] = useState("");
     const [appliedCoupon, setAppliedCoupon] = useState(null);
@@ -36,9 +35,8 @@ export default function CheckoutPage() {
         );
     }
 
-    // সাবটোটাল হিসাব করার লজিক ঠিক আছে, এটি এখন একাধিক বা একটি প্রোডাক্টের জন্য কাজ করবে।
     const subtotal = itemsToCheckout.reduce((total, item) => {
-        const price = item.price || item.regularPrice;
+        const price = item.discountPrice || item.regularPrice; // Corrected price logic
         const quantity = item.quantity || 1;
         return total + price * quantity;
     }, 0);
@@ -55,7 +53,8 @@ export default function CheckoutPage() {
         }
         setIsApplyingCoupon(true);
         try {
-            const response = await axios.post("http://localhost:5000/api/coupons/validate", {
+            // ✅ পরিবর্তন: API URL এখন ডাইনামিক
+            const response = await axios.post(`${API_URL}/api/coupons/validate`, {
                 code: coupon,
                 cartTotal: subtotal,
             });
@@ -78,7 +77,7 @@ export default function CheckoutPage() {
     const handleNext = () => {
         navigate("/shipping-address", {
             state: {
-                products: itemsToCheckout, // এখন `product` এর পরিবর্তে `products` এর তালিকা পাঠানো হচ্ছে
+                products: itemsToCheckout,
                 shippingFee,
                 total: finalTotal,
                 discount,
@@ -99,20 +98,20 @@ export default function CheckoutPage() {
                     <h3 className="text-lg font-semibold text-gray-700">Order Summary ({itemsToCheckout.length} items)</h3>
                     {itemsToCheckout.map((item, index) => (
                         <div key={item.cartId || item._id || index} className="flex items-center space-x-4">
-                              <img 
-                                src={`http://localhost:5000${item.image}`} 
+                             <img 
+                                // ✅ পরিবর্তন: ছবির URL এখন ডাইনামিক
+                                src={`${API_URL}${item.image}`} 
                                 alt={item.name} 
                                 className="w-20 h-20 object-cover rounded-lg border"
                             />
                             <div className="flex-1">
                                 <p className="text-lg font-semibold text-gray-800">{item.name}</p>
                                 <p className="text-sm text-gray-500">Brand: {item.brand}</p>
-                                {/* ✅ কাস্টম সাইজ দেখানোর জন্য 추가 লজিক */}
                                 {item.size && <p className="text-sm text-gray-500">Size: <span className="font-semibold">{item.size}</span></p>}
                                 {item.customSize && <p className="text-sm text-gray-500">{item.customSize.type}: <span className="font-semibold">{item.customSize.value}</span></p>}
-                                <p className="text-sm text-gray-500">Quantity: {item.quantity}</p>
+                                <p className="text-sm text-gray-500">Quantity: {item.quantity || 1}</p>
                             </div>
-                            <p className="text-lg font-bold text-gray-800">৳{(item.price || item.regularPrice) * item.quantity}</p>
+                            <p className="text-lg font-bold text-gray-800">৳{(item.discountPrice || item.regularPrice) * (item.quantity || 1)}</p>
                         </div>
                     ))}
                 </div>

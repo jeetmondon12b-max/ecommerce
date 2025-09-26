@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { FaStar, FaRegHeart, FaShoppingCart } from 'react-icons/fa';
+import { API_URL } from '../apiConfig'; // ✅ পরিবর্তন: API_URL ইম্পোর্ট করা হয়েছে
 
 const ProductCard = ({ product }) => {
     const id = product?._id;
@@ -8,11 +9,12 @@ const ProductCard = ({ product }) => {
     const brand = product?.brand ?? 'N/A';
     const currentPrice = product?.discountPrice ?? product?.regularPrice ?? 0;
     const oldPrice = product?.regularPrice > currentPrice ? product.regularPrice : null;
-    const imageUrl = product?.image ? `http://localhost:5000${product.image}` : "/placeholder-image.jpg";
+    
+    // ✅ পরিবর্তন: ছবির URL এখন API_URL থেকে আসবে
+    const imageUrl = product?.image ? `${API_URL}${product.image}` : "/placeholder-image.jpg";
+    
     const discount = product?.discountPercentage > 0 ? product.discountPercentage : null;
     
-    // ✅ ধাপ ১: ডামি ডেটার পরিবর্তে আসল ডেটা ব্যবহার করা হচ্ছে
-    // এখন `product.rating` এবং `product.numReviews` থেকে ডেটা আসবে।
     const rating = product?.rating || 0;
     const reviewCount = product?.numReviews || 0;
 
@@ -30,29 +32,26 @@ const ProductCard = ({ product }) => {
                 </div>
             </Link>
             
-            {/* ... Discount Badge এবং Wishlist Button অপরিবর্তিত ... */}
-
+            {/* ... বাকি কোড অপরিবর্তিত ... */}
+            
             <div className="p-2 sm:p-3 flex flex-col flex-grow">
                 <Link to={`/product/${id}`} className="block">
                     <h3 className="text-sm sm:text-base font-bold text-gray-800 truncate group-hover:text-indigo-600 transition-colors" title={name}>{name}</h3>
                     <p className="hidden sm:block text-xs text-gray-500 mt-1">Brand: {brand}</p>
                 </Link>
                 
-                {/* ✅ ধাপ ২: রিভিউ সেকশন আপডেট করা হয়েছে */}
                 <div className="flex items-center mt-1 sm:mt-2">
                     <div className="flex items-center">
                         {[...Array(5)].map((_, i) => (
                             <FaStar key={i} className={`h-3 w-3 sm:h-3.5 sm:w-3.5 ${i < Math.floor(rating) ? 'text-yellow-400' : 'text-gray-300'}`} />
                         ))}
                     </div>
-                    {/* যদি কোনো রিভিউ না থাকে, তাহলে রিভিউ সংখ্যা দেখানো হবে না */}
                     {reviewCount > 0 && (
                         <span className="text-[10px] sm:text-xs text-gray-500 ml-1.5">({reviewCount})</span>
                     )}
                 </div>
 
                 <div className="mt-auto pt-2 sm:pt-3">
-                    {/* ... Price এবং Add to Cart Link অপরিবর্তিত ... */}
                     <div className="flex justify-between items-center">
                         <p className="text-lg sm:text-xl font-extrabold text-gray-900">৳{currentPrice}</p>
                         {oldPrice && <p className="text-xs sm:text-sm text-gray-400 line-through">৳{oldPrice}</p>}
