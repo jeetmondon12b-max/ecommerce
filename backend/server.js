@@ -6,7 +6,7 @@ import { fileURLToPath } from 'url';
 import connectDB from './config/db.js';
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 
-// Route imports
+// --- Route Imports ---
 import productRoutes from './routes/productRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
@@ -15,42 +15,44 @@ import couponRoutes from './routes/couponRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import wishlistRoutes from './routes/wishlistRoutes.js';
 import categoryRoutes from './routes/categoryRoutes.js';
-import pageCategoryRoutes from './routes/pageCategoryRoutes.js'; 
-import bannerRoutes from './routes/bannerRoutes.js'; 
+import pageCategoryRoutes from './routes/pageCategoryRoutes.js';
+import bannerRoutes from './routes/bannerRoutes.js';
 
-// Initial Configuration
+// --- Initial Setup ---
 dotenv.config();
 connectDB();
 
 const app = express();
-
 app.set('trust proxy', 1);
 
-// --- SIMPLIFIED & FINAL CORS CONFIGURATION ---
-// This allows requests from your specific frontend URL and localhost
+// --- CORS Setup ---
 app.use(cors({
   origin: [
-    'https://ecommerce-2-odlo.onrender.com', // Your LIVE Frontend URL
-    'http://localhost:5173'                 // Your LOCAL Frontend URL
-  ]
+    'https://ecommerce-2-odlo.onrender.com', // ✅ Render (LIVE Frontend)
+    'http://localhost:5173'                 // ✅ Local Frontend (Vite)
+  ],
+  credentials: true,
 }));
 
-// Core Middleware
+// --- Core Middleware ---
 app.use(express.json());
 
-// --- HEALTH CHECK ROUTE FOR DEBUGGING ---
-// This will tell us if the server is running correctly.
+// --- Health Check ---
 app.get('/', (req, res) => {
-  res.status(200).send('<h1>Backend Server is ALIVE and responding!</h1>');
+  res.status(200).send('<h1>✅ Backend Server is ALIVE and responding!</h1>');
 });
 
-// Static Folder for Image Uploads - Using a more robust path
+// --- Static Folder for Uploads ---
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 
+// ⚡ যদি uploads ফোল্ডার backend project এর ভিতরে থাকে
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// API Routes
+// ⚡ যদি uploads ফোল্ডার root এ থাকে (backend এর বাইরে)
+// app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
+
+// --- API Routes ---
 app.use('/api/products', productRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
@@ -58,14 +60,16 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/coupons', couponRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/wishlist', wishlistRoutes);
-app.use('/api/categories', categoryRoutes); 
-app.use('/api/page-categories', pageCategoryRoutes); 
+app.use('/api/categories', categoryRoutes);
+app.use('/api/page-categories', pageCategoryRoutes);
 app.use('/api/banners', bannerRoutes);
 
-// Custom Error Handling Middleware
+// --- Error Handling Middleware ---
 app.use(notFound);
 app.use(errorHandler);
 
+// --- Server Start ---
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`✅ Server is running successfully on port ${PORT}`));
-
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});
