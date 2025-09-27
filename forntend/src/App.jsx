@@ -3,8 +3,6 @@ import { Routes, Route, Outlet } from "react-router-dom";
 
 // Layout & Protection Components
 import Header from "./components/Header.jsx";
-// NOTE: BottomNav has been removed as its logic is now inside Header.jsx
-// import BottomNav from "./components/BottomNav.jsx"; 
 import AdminRoute from "./components/AdminRoute.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
@@ -21,7 +19,7 @@ import MyOrdersPage from "./pages/MyOrdersPage.jsx";
 import WishlistPage from "./pages/WishlistPage.jsx";
 import OrderDetailsPage from "./pages/OrderDetailsPage.jsx";
 import CategoryProductsPage from "./pages/CategoryProductsPage.jsx";
-import SearchResultsPage from "./pages/SearchResultsPage.jsx"; // Assuming you have this page
+import SearchResultsPage from "./pages/SearchResultsPage.jsx";
 
 // Admin Page Components
 import AdminPage from "./pages/AdminPage.jsx";
@@ -39,7 +37,6 @@ const AppLayout = () => {
     return (
         <>
             <Header />
-            {/* The main content area */}
             <main className="container mx-auto p-4 sm:p-6">
                 <Outlet />
             </main>
@@ -60,7 +57,7 @@ const App = () => {
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="/cart" element={<CartPage />} />
 
-                {/* --- Protected Routes (for logged-in users) --- */}
+                {/* --- Protected Routes --- */}
                 <Route element={<ProtectedRoute />}>
                     <Route path="/checkout" element={<CheckoutPage />} />
                     <Route path="/shipping-address" element={<ShippingPage />} />
