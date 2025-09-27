@@ -120,6 +120,6 @@ const WishlistSummaryPage = () => {
             )}
         </div>
     );
-};
+};  
 
 export default WishlistSummaryPage;
