@@ -1,5 +1,4 @@
 // This file intelligently chooses the correct API URL based on the environment.
-export const API_URL =
-  process.env.NODE_ENV === 'production'
-    ? 'https://ecommerce-1-csj6.onrender.com' // Your LIVE backend URL on Render (Use your latest backend URL here)
-    : 'http://localhost:5000';                 // Your LOCAL backend URL for development
+// Vite uses import.meta.env for environment variables.
+export const API_URL = 
+    import.meta.env.VITE_API_URL || 'http://localhost:5000';

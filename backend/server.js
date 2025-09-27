@@ -27,24 +27,24 @@ const app = express();
 app.set('trust proxy', 1);
 
 // --- SIMPLIFIED & FINAL CORS CONFIGURATION ---
-const allowedOrigins = [
-  'https://meer-ishrak-2.onrender.com', // Your LIVE Frontend URL
-  'http://localhost:5173'              // Your LOCAL Frontend URL
-];
-
+// This allows requests from your specific frontend URL and localhost
 app.use(cors({
-  origin: allowedOrigins
+  origin: [
+    'https://ecommerce-2-ro8h.onrender.com', // Your LIVE Frontend URL
+    'http://localhost:5173'                 // Your LOCAL Frontend URL
+  ]
 }));
 
 // Core Middleware
 app.use(express.json());
 
-// --- HEALTH CHECK ROUTE ---
+// --- HEALTH CHECK ROUTE FOR DEBUGGING ---
+// This will tell us if the server is running correctly.
 app.get('/', (req, res) => {
   res.status(200).send('<h1>Backend Server is ALIVE and responding!</h1>');
 });
 
-// Static Folder for Image Uploads
+// Static Folder for Image Uploads - Using a more robust path
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
@@ -68,3 +68,4 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`✅ Server is running successfully on port ${PORT}`));
+

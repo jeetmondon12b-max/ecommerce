@@ -28,15 +28,16 @@ import ProductListPage from "./pages/ProductListPage.jsx";
 import EditProductPage from "./pages/EditProductPage.jsx";
 import OrderListPage from "./pages/OrderListPage.jsx";
 import WishlistSummaryPage from "./pages/WishlistSummaryPage.jsx";
-import AdminCategoryPage from "./pages/AdminCategoryPage.jsx";
-import AdminPageCategoryPage from "./pages/AdminPageCategoryPage.jsx";
-import AdminBannerPage from "./pages/AdminBannerPage.jsx";
-import CouponManagePage from "./pages/CouponManagePage.jsx";
+import AdminCategoryPage from "./pages-admin/AdminCategoryPage.jsx";
+import AdminPageCategoryPage from "./pages-admin/AdminPageCategoryPage.jsx";
+import AdminBannerPage from "./pages-admin/AdminBannerPage.jsx";
+import CouponManagePage from "./pages-admin/CouponManagePage.jsx";
 
 const AppLayout = () => {
     return (
         <>
             <Header />
+            {/* The main content area */}
             <main className="container mx-auto p-4 sm:p-6">
                 <Outlet />
             </main>
@@ -57,7 +58,7 @@ const App = () => {
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="/cart" element={<CartPage />} />
 
-                {/* --- Protected Routes --- */}
+                {/* --- Protected Routes (for logged-in users) --- */}
                 <Route element={<ProtectedRoute />}>
                     <Route path="/checkout" element={<CheckoutPage />} />
                     <Route path="/shipping-address" element={<ShippingPage />} />
