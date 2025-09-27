@@ -30,7 +30,7 @@ app.set('trust proxy', 1);
 // This allows requests from your specific frontend URL and localhost
 app.use(cors({
   origin: [
-    'https://ecommerce-2-ro8h.onrender.com', // Your LIVE Frontend URL
+    'https://ecommerce-2-odlo.onrender.com', // Your LIVE Frontend URL
     'http://localhost:5173'                 // Your LOCAL Frontend URL
   ]
 }));
