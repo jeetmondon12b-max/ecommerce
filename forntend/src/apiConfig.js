@@ -6,4 +6,3 @@ export const API_URL =
   process.env.NODE_ENV === 'production'
     ? 'https://ecommerce-1-csj6.onrender.com' // Your LIVE backend URL on Render
     : 'http://localhost:5000';                 // Your LOCAL backend URL for development
-
