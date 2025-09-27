@@ -28,10 +28,10 @@ import ProductListPage from "./pages/ProductListPage.jsx";
 import EditProductPage from "./pages/EditProductPage.jsx";
 import OrderListPage from "./pages/OrderListPage.jsx";
 import WishlistSummaryPage from "./pages/WishlistSummaryPage.jsx";
-import AdminCategoryPage from "./pages-admin/AdminCategoryPage.jsx";
-import AdminPageCategoryPage from "./pages-admin/AdminPageCategoryPage.jsx";
-import AdminBannerPage from "./pages-admin/AdminBannerPage.jsx";
-import CouponManagePage from "./pages-admin/CouponManagePage.jsx";
+import AdminCategoryPage from "./pages/AdminCategoryPage.jsx";
+import AdminPageCategoryPage from "./pages/AdminPageCategoryPage.jsx";
+import AdminBannerPage from "./pages/AdminBannerPage.jsx";
+import CouponManagePage from "./pages/CouponManagePage.jsx";
 
 const AppLayout = () => {
     return (
