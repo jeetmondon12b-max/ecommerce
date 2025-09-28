@@ -1,114 +1,88 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { 
-    FaFacebook, FaInstagram, FaYoutube, FaLinkedin,
-    FaPhoneAlt, FaEnvelope 
-} from 'react-icons/fa';
+import { FaPhoneAlt, FaEnvelope, FaFacebookF, FaInstagram, FaYoutube, FaLinkedinIn } from 'react-icons/fa';
 
 const Footer = () => {
-    // সাব-হেডিং স্টাইল করার জন্য একটি ছোট কম্পোনেন্ট
-    const FooterTitle = ({ children }) => (
-        <h3 className="text-lg font-bold text-white mb-6 uppercase tracking-wider">
-            {children}
-        </h3>
-    );
-
-    // প্রতিটি লিঙ্কের জন্য একটি ছোট কম্পোনেন্ট
-    const FooterLink = ({ to, children }) => (
-        <li>
-            <Link to={to} className="text-gray-400 hover:text-white hover:pl-2 transition-all duration-300 block">
-                {children}
-            </Link>
-        </li>
-    );
-
-    // সোশ্যাল মিডিয়া আইকনের জন্য একটি ছোট কম্পোনেন্ট
-    const SocialIcon = ({ href, icon }) => (
-        <a 
-            href={href} 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center text-white hover:bg-indigo-500 hover:scale-110 transition-all duration-300"
-        >
-            {icon}
-        </a>
-    );
-
-    return (
-        <footer className="bg-slate-900 text-gray-300 w-full">
-            <div className="container mx-auto px-6 pt-16 pb-8">
-                
-                {/* মূল কন্টেন্ট সেকশন */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
-
-                    {/* কলাম ১: ব্র্যান্ড এবং কন্টাক্ট */}
-                    <div className="space-y-4">
-                        <FooterTitle>MyShop</FooterTitle>
-                        <p className="text-gray-400 text-sm leading-relaxed">
-                            Discover the latest trends and top-quality products. We are committed to providing you with the best online shopping experience.
-                        </p>
-                        <div className="space-y-3 pt-2">
-                            <a href="tel:01818458143" className="flex items-center gap-3 text-gray-300 hover:text-white transition-colors">
-                                <FaPhoneAlt className="text-indigo-400"/>
-                                <span>01818458143</span>
-                            </a>
-                            <a href="mailto:meerishraka@gmail.com" className="flex items-center gap-3 text-gray-300 hover:text-white transition-colors">
-                                <FaEnvelope className="text-indigo-400"/>
-                                <span>meerishraka@gmail.com</span>
-                            </a>
-                        </div>
-                    </div>
-
-                    {/* কলাম ২: Quick Links */}
-                    <div className="space-y-4">
-                        <FooterTitle>Quick Links</FooterTitle>
-                        <ul className="space-y-3">
-                            <FooterLink to="/about">About Us</FooterLink>
-                            <FooterLink to="/contact">Contact Us</FooterLink>
-                            <FooterLink to="/my-orders">My Orders</FooterLink>
-                            <FooterLink to="/wishlist">Wishlist</FooterLink>
-                        </ul>
-                    </div>
-
-                    {/* কলাম ৩: Help & Support */}
-                    <div className="space-y-4">
-                        <FooterTitle>Help & Support</FooterTitle>
-                        <ul className="space-y-3">
-                            <FooterLink to="/faq">FAQ</FooterLink>
-                            <FooterLink to="/shipping-policy">Shipping Policy</FooterLink>
-                            <FooterLink to="/return-policy">Return & Refund</FooterLink>
-                            <FooterLink to="/terms-of-service">Terms of Service</FooterLink>
-                        </ul>
-                    </div>
-
-                    {/* কলাম ৪: Follow Us */}
-                    <div className="space-y-4">
-                        <FooterTitle>Follow Us</FooterTitle>
-                        <p className="text-gray-400 text-sm">
-                            Stay connected for the latest updates and offers.
-                        </p>
-                        <div className="flex items-center gap-4 pt-2">
-                            <SocialIcon href="https://facebook.com" icon={<FaFacebook size={20} />} />
-                            <SocialIcon href="https://instagram.com" icon={<FaInstagram size={20} />} />
-                            <SocialIcon href="https://youtube.com" icon={<FaYoutube size={20} />} />
-                            <SocialIcon href="https://linkedin.com" icon={<FaLinkedin size={20} />} />
-                        </div>
-                    </div>
-                </div>
-
-                {/* নিচের অংশ: কপিরাইট এবং ক্রেডিট */}
-                <div className="mt-12 pt-8 border-t border-gray-700/50 flex flex-col sm:flex-row justify-between items-center text-sm text-gray-400">
-                    <p className="text-center sm:text-left mb-4 sm:mb-0">
-                        Copyright &copy; {new Date().getFullYear()} Ishrak. All Rights Reserved.
-                    </p>
-                    <p>
-                        Developed by <a href="mailto:meerishraka@gmail.com" className="font-semibold text-indigo-400 hover:text-white transition-colors">Meer Ishrak</a>
-                    </p>
-                </div>
-
+  return (
+    <footer className="bg-[#0f172a] text-gray-300">
+      <div className="container mx-auto px-6 py-12">
+        {/* Main Footer Content Grid */}
+        {/* 👇 এই লাইনে পরিবর্তন করা হয়েছে */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          
+          {/* Column 1: MYSHOP */}
+          <div className="space-y-4">
+            <h2 className="text-xl font-bold text-white uppercase tracking-wider">MYSHOP</h2>
+            <p className="text-sm">
+              Discover the latest trends and top-quality products. We are committed to providing you with the best online shopping experience.
+            </p>
+            <div className="flex items-center space-x-3">
+              <FaPhoneAlt className="text-white" />
+              <span>01818458143</span>
             </div>
-        </footer>
-    );
+            <div className="flex items-center space-x-3">
+              <FaEnvelope className="text-white" />
+              <span>meerishraka@gmail.com</span>
+            </div>
+          </div>
+
+          {/* Column 2: QUICK LINKS */}
+          <div className="space-y-4">
+            <h2 className="text-xl font-bold text-white uppercase tracking-wider">Quick Links</h2>
+            <ul className="space-y-2">
+              <li><Link to="/about-us" className="hover:text-white transition-colors">About Us</Link></li>
+              <li><Link to="/contact-us" className="hover:text-white transition-colors">Contact Us</Link></li>
+              <li><Link to="/my-orders" className="hover:text-white transition-colors">My Orders</Link></li>
+              <li><Link to="/wishlist" className="hover:text-white transition-colors">Wishlist</Link></li>
+            </ul>
+          </div>
+
+          {/* Column 3: HELP & SUPPORT */}
+          <div className="space-y-4">
+            <h2 className="text-xl font-bold text-white uppercase tracking-wider">Help & Support</h2>
+            <ul className="space-y-2">
+              <li><Link to="/faq" className="hover:text-white transition-colors">FAQ</Link></li>
+              <li><Link to="/shipping-policy" className="hover:text-white transition-colors">Shipping Policy</Link></li>
+              <li><Link to="/return-refund" className="hover:text-white transition-colors">Return & Refund</Link></li>
+              <li><Link to="/terms-of-service" className="hover:text-white transition-colors">Terms of Service</Link></li>
+            </ul>
+          </div>
+
+          {/* Column 4: FOLLOW US */}
+          <div className="space-y-4">
+            <h2 className="text-xl font-bold text-white uppercase tracking-wider">Follow Us</h2>
+            <p className="text-sm">Stay connected for the latest updates and offers.</p>
+            <div className="flex space-x-4">
+              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="p-2 bg-gray-700 rounded-full hover:bg-blue-600 transition-colors">
+                <FaFacebookF className="text-white" />
+              </a>
+              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="p-2 bg-gray-700 rounded-full hover:bg-pink-500 transition-colors">
+                <FaInstagram className="text-white" />
+              </a>
+              <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="p-2 bg-gray-700 rounded-full hover:bg-red-600 transition-colors">
+                <FaYoutube className="text-white" />
+              </a>
+              <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="p-2 bg-gray-700 rounded-full hover:bg-blue-700 transition-colors">
+                <FaLinkedinIn className="text-white" />
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Footer Bottom Bar */}
+      <div className="border-t border-gray-700">
+        <div className="container mx-auto px-6 py-4 flex flex-col sm:flex-row justify-between items-center text-sm">
+          <p className="mb-2 sm:mb-0 text-center sm:text-left">
+            Copyright &copy; {new Date().getFullYear()} ishraak. All Rights Reserved.
+          </p>
+          <p>
+            Developed by <a href="https://your-portfolio-link.com" target="_blank" rel="noopener noreferrer" className="font-semibold text-white hover:underline">Meer Ishrak</a>
+          </p>
+        </div>
+      </div>
+    </footer>
+  );
 };
 
 export default Footer;

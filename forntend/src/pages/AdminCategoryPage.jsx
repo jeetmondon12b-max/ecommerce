@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useAuth } from '../context/AuthContext.jsx';
-import { FiPlus, FiEdit, FiTrash2, FiX, FiLoader } from 'react-icons/fi';
 import toast, { Toaster } from 'react-hot-toast';
+import { useAuth } from '../context/AuthContext.jsx';
+import { FiEdit, FiTrash2, FiPlus, FiX, FiLoader } from 'react-icons/fi';
+import { API_URL } from '../apiConfig.js'; // ✅ পরিবর্তন: API_URL ইম্পোর্ট করা হয়েছে
 
-// ✅ মোবাইল ডিভাইসের জন্য নতুন Category Card কম্পোনেন্ট
+// মোবাইল ডিভাইসের জন্য Category Card কম্পোনেন্ট
 const CategoryCard = ({ category, onEdit, onDelete }) => (
     <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex justify-between items-center">
         <div>
@@ -22,7 +23,6 @@ const CategoryCard = ({ category, onEdit, onDelete }) => (
     </div>
 );
 
-
 const AdminCategoryPage = () => {
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -34,11 +34,12 @@ const AdminCategoryPage = () => {
     const fetchCategories = async () => {
         try {
             setLoading(true);
-            const { data } = await axios.get('/api/categories');
+            // ✅ পরিবর্তন: API URL এখন ডাইনামিক
+            const { data } = await axios.get(`${API_URL}/api/categories`);
             setCategories(data);
         } catch (error) {
             toast.error('Failed to load categories.');
-            console.error(error);
+            console.error("Error fetching categories:", error);
         } finally {
             setLoading(false);
         }
@@ -74,9 +75,11 @@ const AdminCategoryPage = () => {
         }
 
         const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
+        
+        // ✅ পরিবর্তন: API URL এখন ডাইনামিক
         const promise = currentCategory
-            ? axios.put(`/api/categories/${currentCategory._id}`, { name: categoryName }, config)
-            : axios.post('/api/categories', { name: categoryName }, config);
+            ? axios.put(`${API_URL}/api/categories/${currentCategory._id}`, { name: categoryName }, config)
+            : axios.post(`${API_URL}/api/categories`, { name: categoryName }, config);
 
         toast.promise(promise, {
             loading: 'Saving category...',
@@ -92,7 +95,8 @@ const AdminCategoryPage = () => {
     const handleDelete = async (categoryId) => {
         if (window.confirm('Are you sure you want to delete this category? This cannot be undone.')) {
             const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
-            const promise = axios.delete(`/api/categories/${categoryId}`, config);
+            // ✅ পরিবর্তন: API URL এখন ডাইনামিক
+            const promise = axios.delete(`${API_URL}/api/categories/${categoryId}`, config);
 
             toast.promise(promise, {
                 loading: 'Deleting category...',
@@ -117,7 +121,7 @@ const AdminCategoryPage = () => {
                 </button>
             </div>
 
-            {/* ✅ ডেস্কটপ ভিউ: টেবিল (শুধু md স্ক্রিন বা তার চেয়ে বড় ডিভাইসে দেখা যাবে) */}
+            {/* ডেস্কটপ ভিউ: টেবিল */}
             <div className="hidden md:block bg-white p-4 rounded-lg shadow-md overflow-x-auto">
                 <table className="w-full min-w-[600px]">
                     <thead className="bg-gray-50">
@@ -144,7 +148,7 @@ const AdminCategoryPage = () => {
                 </table>
             </div>
 
-            {/* ✅ মোবাইল ভিউ: কার্ড লিস্ট (শুধু ছোট স্ক্রিনে দেখা যাবে) */}
+            {/* মোবাইল ভিউ: কার্ড লিস্ট */}
             <div className="md:hidden space-y-3">
                 {categories.length > 0 ? categories.map((cat) => (
                     <CategoryCard 

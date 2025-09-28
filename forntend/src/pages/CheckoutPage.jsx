@@ -1,14 +1,13 @@
 import { useState } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import axios from "axios";
-import { FiTag, FiTruck } from "react-icons/fi";
-import { API_URL } from '../apiConfig'; // ✅ পরিবর্তন: API_URL ইম্পোর্ট করা হয়েছে
+import { FiTag, FiTruck, FiLoader } from "react-icons/fi";
+import { API_URL } from '../apiConfig';
 
 export default function CheckoutPage() {
     const location = useLocation();
     const navigate = useNavigate();
 
-    // এখন এটি কার্ট পেজ থেকে আসা `items` এবং ডিটেইলস পেজ থেকে আসা `singleItem` উভয়ই গ্রহণ করতে পারবে।
     let itemsToCheckout = [];
     if (location.state?.items && Array.isArray(location.state.items)) {
         itemsToCheckout = location.state.items;
@@ -25,10 +24,10 @@ export default function CheckoutPage() {
 
     if (itemsToCheckout.length === 0) {
         return (
-            <div className="min-h-screen flex flex-col justify-center items-center text-center p-4">
+            <div className="min-h-[60vh] flex flex-col justify-center items-center text-center p-4">
                 <h1 className="text-2xl font-bold text-red-600 mb-4">No Products Found for Checkout</h1>
                 <p className="text-gray-600 mb-6">Please add items to your cart or select a product first.</p>
-                <Link to="/" className="bg-indigo-600 text-white px-6 py-2 rounded-lg font-semibold">
+                <Link to="/" className="bg-indigo-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-indigo-700 transition">
                     Go to Homepage
                 </Link>
             </div>
@@ -36,7 +35,7 @@ export default function CheckoutPage() {
     }
 
     const subtotal = itemsToCheckout.reduce((total, item) => {
-        const price = item.discountPrice || item.regularPrice; // Corrected price logic
+        const price = item.discountPrice || item.regularPrice;
         const quantity = item.quantity || 1;
         return total + price * quantity;
     }, 0);
@@ -53,7 +52,6 @@ export default function CheckoutPage() {
         }
         setIsApplyingCoupon(true);
         try {
-            // ✅ পরিবর্তন: API URL এখন ডাইনামিক
             const response = await axios.post(`${API_URL}/api/coupons/validate`, {
                 code: coupon,
                 cartTotal: subtotal,
@@ -87,109 +85,98 @@ export default function CheckoutPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-100 flex justify-center items-center p-4 sm:p-6 lg:p-8">
-            <div className="w-full max-w-2xl bg-white rounded-2xl shadow-xl p-6 sm:p-8 space-y-8">
-                <h2 className="text-3xl lg:text-4xl font-bold text-gray-800 text-center">
+        <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+            <div className="w-full max-w-3xl mx-auto bg-white rounded-2xl shadow-xl p-6 sm:p-8 space-y-8">
+                
+                <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 text-center">
                     Complete Your Order
                 </h2>
 
                 {/* --- Order Summary Section --- */}
-                <div className="border border-gray-200 bg-gray-50 rounded-2xl p-4 space-y-4">
-                    <h3 className="text-lg font-semibold text-gray-700">Order Summary ({itemsToCheckout.length} items)</h3>
+                <div className="border border-gray-200 bg-gray-50/50 rounded-xl p-4 space-y-4">
+                    <h3 className="text-lg font-semibold text-gray-700">Order Summary ({itemsToCheckout.length} {itemsToCheckout.length > 1 ? 'items' : 'item'})</h3>
                     {itemsToCheckout.map((item, index) => (
-                        <div key={item.cartId || item._id || index} className="flex items-center space-x-4">
+                        <div key={item.cartId || item._id || index} className="flex items-center space-x-3 sm:space-x-4">
                              <img 
-                                // ✅ পরিবর্তন: ছবির URL এখন ডাইনামিক
                                 src={`${API_URL}${item.image}`} 
                                 alt={item.name} 
-                                className="w-20 h-20 object-cover rounded-lg border"
+                                className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-lg border"
                             />
                             <div className="flex-1">
-                                <p className="text-lg font-semibold text-gray-800">{item.name}</p>
-                                <p className="text-sm text-gray-500">Brand: {item.brand}</p>
-                                {item.size && <p className="text-sm text-gray-500">Size: <span className="font-semibold">{item.size}</span></p>}
-                                {item.customSize && <p className="text-sm text-gray-500">{item.customSize.type}: <span className="font-semibold">{item.customSize.value}</span></p>}
-                                <p className="text-sm text-gray-500">Quantity: {item.quantity || 1}</p>
+                                <p className="font-semibold text-gray-800">{item.name}</p>
+                                {item.size && <p className="text-sm text-gray-500">Size: <span className="font-medium">{item.size}</span></p>}
+                                <p className="text-sm text-gray-500">Qty: {item.quantity || 1}</p>
                             </div>
-                            <p className="text-lg font-bold text-gray-800">৳{(item.discountPrice || item.regularPrice) * (item.quantity || 1)}</p>
+                            <p className="font-bold text-gray-800">৳{(item.discountPrice || item.regularPrice) * (item.quantity || 1)}</p>
                         </div>
                     ))}
                 </div>
 
                 {/* --- Shipping Fee Section --- */}
                 <div>
-                    <h4 className="text-xl font-semibold text-gray-800 mb-4 flex items-center"><FiTruck className="mr-3 text-gray-500"/>Shipping Method</h4>
+                    <h4 className="text-lg font-semibold text-gray-800 mb-3 flex items-center"><FiTruck className="mr-2 text-gray-500"/>Shipping Method</h4>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div
-                            onClick={() => setShippingOption("inside_dhaka")}
-                            className={`p-4 border-2 rounded-xl cursor-pointer transition-all ${shippingOption === "inside_dhaka" ? "border-blue-600 bg-blue-50" : "border-gray-300 hover:border-blue-500"}`}
-                        >
+                        <div onClick={() => setShippingOption("inside_dhaka")} className={`p-4 border-2 rounded-xl cursor-pointer transition-all ${shippingOption === "inside_dhaka" ? "border-indigo-600 bg-indigo-50" : "border-gray-300 hover:border-indigo-500"}`}>
                             <p className="font-semibold text-gray-800">Inside Dhaka</p>
-                            <p className="text-gray-600 font-bold">৳{shippingCosts.inside_dhaka}</p>
+                            <p className="font-bold">৳{shippingCosts.inside_dhaka}</p>
                         </div>
-                        <div
-                            onClick={() => setShippingOption("outside_dhaka")}
-                            className={`p-4 border-2 rounded-xl cursor-pointer transition-all ${shippingOption === "outside_dhaka" ? "border-blue-600 bg-blue-50" : "border-gray-300 hover:border-blue-500"}`}
-                        >
+                        <div onClick={() => setShippingOption("outside_dhaka")} className={`p-4 border-2 rounded-xl cursor-pointer transition-all ${shippingOption === "outside_dhaka" ? "border-indigo-600 bg-indigo-50" : "border-gray-300 hover:border-indigo-500"}`}>
                             <p className="font-semibold text-gray-800">Outside Dhaka</p>
-                            <p className="text-gray-600 font-bold">৳{shippingCosts.outside_dhaka}</p>
+                            <p className="font-bold">৳{shippingCosts.outside_dhaka}</p>
                         </div>
                     </div>
                 </div>
 
                 {/* --- Coupon Section --- */}
                 <div>
-                    <h4 className="text-xl font-semibold text-gray-800 mb-4 flex items-center"><FiTag className="mr-3 text-gray-500"/>Apply Coupon</h4>
-                    <div className="flex gap-3">
+                    <h4 className="text-lg font-semibold text-gray-800 mb-3 flex items-center"><FiTag className="mr-2 text-gray-500"/>Apply Coupon</h4>
+                    <div className="flex flex-col sm:flex-row gap-3">
                         <input
                             type="text"
                             value={coupon}
                             onChange={(e) => setCoupon(e.target.value.toUpperCase())}
                             placeholder="Enter coupon code"
-                            className="flex-1 px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="flex-1 px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
                             disabled={isApplyingCoupon}
                         />
-                        <button
-                            onClick={handleApplyCoupon}
-                            disabled={isApplyingCoupon}
-                            className="px-6 py-3 bg-green-600 text-white rounded-xl font-semibold hover:bg-green-700 transition disabled:bg-green-300"
-                        >
+                        <button onClick={handleApplyCoupon} disabled={isApplyingCoupon} className="w-full sm:w-auto px-6 py-3 bg-green-600 text-white rounded-xl font-semibold hover:bg-green-700 transition disabled:bg-green-300 flex items-center justify-center">
+                            {isApplyingCoupon ? <FiLoader className="animate-spin mr-2"/> : null}
                             {isApplyingCoupon ? "Applying..." : "Apply"}
                         </button>
                     </div>
                     {couponMessage.text && (
-                        <p className={`font-medium mt-2 ${couponMessage.type === "error" ? "text-red-500" : "text-green-600"}`}>
+                        <p className={`font-medium mt-2 text-sm ${couponMessage.type === "error" ? "text-red-500" : "text-green-600"}`}>
                             {couponMessage.text}
                         </p>
                     )}
                 </div>
 
                 {/* --- Total Calculation --- */}
-                <div className="border-t pt-6 space-y-3">
-                    <div className="flex justify-between text-lg">
-                        <span className="font-medium text-gray-600">Subtotal</span>
-                        <span className="font-semibold text-gray-800">৳{subtotal}</span>
+                <div className="border-t pt-6 space-y-2 text-base text-gray-600">
+                    <div className="flex justify-between font-medium">
+                        <span>Subtotal</span>
+                        <span className="text-gray-800">৳{subtotal}</span>
                     </div>
-                    <div className="flex justify-between text-lg">
-                        <span className="font-medium text-gray-600">Shipping</span>
-                        <span className="font-semibold text-gray-800">৳{shippingFee}</span>
+                    <div className="flex justify-between font-medium">
+                        <span>Shipping</span>
+                        <span className="text-gray-800">৳{shippingFee}</span>
                     </div>
                     {discount > 0 && (
-                        <div className="flex justify-between text-lg text-green-600">
-                            <span className="font-medium">Discount</span>
+                        <div className="flex justify-between font-medium text-green-600">
+                            <span>Discount</span>
                             <span>-৳{discount}</span>
                         </div>
                     )}
                     <div className="flex justify-between items-center pt-3 border-t mt-3">
-                        <span className="text-xl lg:text-2xl font-bold text-gray-900">Total</span>
-                        <span className="text-2xl lg:text-3xl font-bold text-blue-600">৳{finalTotal}</span>
+                        <span className="text-xl font-bold text-gray-900">Total</span>
+                        <span className="text-2xl font-bold text-indigo-600">৳{finalTotal}</span>
                     </div>
                 </div>
                 
                 {/* --- Proceed Button --- */}
                 <button
                     onClick={handleNext}
-                    className="w-full bg-blue-600 text-white py-4 rounded-xl font-semibold text-lg hover:bg-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                    className="w-full bg-indigo-600 text-white py-3.5 rounded-xl font-semibold text-lg hover:bg-indigo-700 transition-all duration-300 shadow-lg hover:shadow-indigo-500/50 transform hover:-translate-y-1"
                 >
                     Proceed to Shipping Address
                 </button>

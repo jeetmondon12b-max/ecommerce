@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { API_URL } from '../apiConfig';
 
 // Component Imports
 import ProductSection from '../components/ProductSection.jsx';
 import Searchbar from '../components/Searchbar.jsx';
-import HeroSection from '../components/Banner.jsx'; // Corrected import name
+import HeroSection from '../components/Banner.jsx';
 import Category from '../components/Category.jsx';
-import Footer from '../components/Footer.jsx';
 
 const HomePage = () => {
-    // This state and useEffect are for showing separate product sections for 'Hot Deals', etc.
     const [productCategories, setProductCategories] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -18,17 +17,15 @@ const HomePage = () => {
         const fetchProductCategories = async () => {
             try {
                 setLoading(true);
-                // Fetching Product Categories from the backend
-                const { data } = await axios.get('/api/categories');
-                
-                // Ensure the response is an array before setting state
-                if (Array.isArray(data)) {
-                    setProductCategories(data);
-                } else {
-                    setProductCategories([]);
-                }
+                // ✅ Backend থেকে ক্যাটাগরি ফেচ
+                const { data } = await axios.get(`${API_URL}/api/categories`);
+
+                // ✅ শুধু যেসব ক্যাটাগরিতে প্রোডাক্ট আছে সেগুলোই দেখানো হবে
+                const categoriesWithProducts = data.filter(cat => cat.productCount > 0);
+
+                setProductCategories(categoriesWithProducts || []);
             } catch (err) {
-                setError('Could not load the page content. Please try again later.');
+                setError('Could not load categories. Please try again.');
                 console.error("Error fetching product categories:", err);
             } finally {
                 setLoading(false);
@@ -37,43 +34,37 @@ const HomePage = () => {
         fetchProductCategories();
     }, []);
 
-    // Page loading and error handling
-    if (loading) {
-        return <div className="text-center py-40 font-semibold">Loading Homepage...</div>;
-    }
-
     if (error) {
         return <div className="text-center py-40 text-red-500 font-semibold">{error}</div>;
     }
 
     return (
-        <div className="space-y-16">
-            <Searchbar />
-            
-            {/* The HeroSection (banner) component is used here */}
-            <HeroSection />
-            
-            {/* This component shows the main category icons like 'Men', 'Women', etc. */}
-            <Category />
+        <div className="space-y-4">
+            {/* --- Top Section --- */}
+            <div className="container mx-auto p-4 sm:p-6 space-y-12">
+                <Searchbar />
+                <HeroSection />
+                <Category /> {/* Page Categories */}
+            </div>
 
-            {/* --- Dynamically rendering a ProductSection for each Product Category --- */}
-            {productCategories.map(category => (
-                <ProductSection 
-                    key={category._id}
-                    title={category.name}
-                    categorySlug={category.slug}
-                />
-            ))}
+            {/* --- Product Sections by Category --- */}
+            {loading ? (
+                <p className="text-center py-10 font-semibold">Loading product sections...</p>
+            ) : (
+                productCategories.map(category => (
+                    <div key={category._id}>
+                        <ProductSection
+                            title={category.name}
+                            categorySlug={category.slug}
+                        />
+                    </div>
+                ))
+            )}
 
-            <hr className="my-8 border-gray-200" />
-            
-            {/* --- A separate section for all products --- */}
-            <ProductSection 
-                title="All Products"
-                // No slug is passed here, so it will show all products
-            />
-            
-            <Footer/>
+            {/* --- All Products Section --- */}
+            <div>
+                <ProductSection title="All Products" />
+            </div>
         </div>
     );
 };

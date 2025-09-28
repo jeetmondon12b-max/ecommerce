@@ -7,5 +7,8 @@ export default {
   theme: {
     extend: {},
   },
-  plugins: [],
+  // ✅ পরিবর্তন: tailwind-scrollbar-hide প্লাগইন যোগ করা হয়েছে
+  plugins: [
+    require('tailwind-scrollbar-hide')
+  ],
 }

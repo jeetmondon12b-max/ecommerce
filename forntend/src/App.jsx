@@ -1,8 +1,9 @@
 import React from "react";
-import { Routes, Route, Outlet } from "react-router-dom";
+import { Routes, Route, Outlet, useLocation } from "react-router-dom";
 
 // Layout & Protection Components
 import Header from "./components/Header.jsx";
+import Footer from "./components/Footer.jsx";
 import AdminRoute from "./components/AdminRoute.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
@@ -20,6 +21,7 @@ import WishlistPage from "./pages/WishlistPage.jsx";
 import OrderDetailsPage from "./pages/OrderDetailsPage.jsx";
 import CategoryProductsPage from "./pages/CategoryProductsPage.jsx";
 import SearchResultsPage from "./pages/SearchResultsPage.jsx";
+import NotFoundPage from "./pages/NotFoundPage.jsx"; // ✅ নতুন পরিবর্তন: NotFoundPage ইম্পোর্ট করা হয়েছে
 
 // Admin Page Components
 import AdminPage from "./pages/AdminPage.jsx";
@@ -31,16 +33,22 @@ import WishlistSummaryPage from "./pages/WishlistSummaryPage.jsx";
 import AdminCategoryPage from "./pages/AdminCategoryPage.jsx";
 import AdminPageCategoryPage from "./pages/AdminPageCategoryPage.jsx";
 import AdminBannerPage from "./pages/AdminBannerPage.jsx";
+
 import CouponManagePage from "./pages/CouponManagePage.jsx";
+import CouponForm from "./pages/cuponform.jsx";
+import CouponListPage from "./pages/CouponListPage.jsx";
 
 const AppLayout = () => {
+    const location = useLocation();
+    const isHomePage = location.pathname === '/';
+
     return (
         <>
             <Header />
-            {/* The main content area */}
-            <main className="container mx-auto p-4 sm:p-6">
+            <main className="min-h-screen">
                 <Outlet />
             </main>
+            {isHomePage && <Footer />}
         </>
     );
 };
@@ -53,6 +61,7 @@ const App = () => {
                 <Route path="/" element={<HomePage />} />
                 <Route path="/search" element={<SearchResultsPage />} />
                 <Route path="/page/:pageCategoryName" element={<CategoryProductsPage />} />
+                <Route path="/category/:categorySlug" element={<CategoryProductsPage />} />
                 <Route path="/product/:id" element={<ProductDetailsPage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
@@ -65,14 +74,14 @@ const App = () => {
                     <Route path="/order-success" element={<OrderSuccessPage />} />
                     <Route path="/my-orders" element={<MyOrdersPage />} />
                     <Route path="/wishlist" element={<WishlistPage />} />
-                    <Route path="/orders/:id" element={<OrderDetailsPage />} /> 
+                    <Route path="/orders/:id" element={<OrderDetailsPage />} />
                 </Route>
 
                 {/* --- Admin Routes --- */}
                 <Route path="/admin" element={<AdminRoute />}>
                     <Route index element={<AdminPage />} />
                     <Route path="products" element={<ProductListPage />} />
-                    <Route path="products/edit/:id" element={<EditProductPage />} /> 
+                    <Route path="products/edit/:id" element={<EditProductPage />} />
                     <Route path="page-categories" element={<AdminPageCategoryPage />} />
                     <Route path="categories" element={<AdminCategoryPage />} />
                     <Route path="banners" element={<AdminBannerPage />} />
@@ -81,7 +90,13 @@ const App = () => {
                     <Route path="users" element={<UserListPage />} />
                     <Route path="wishlist-summary" element={<WishlistSummaryPage />} />
                     <Route path="coupons" element={<CouponManagePage />} />
+                    <Route path="coupons/create" element={<CouponForm />} />
+                    <Route path="coupons/list" element={<CouponListPage />} />
                 </Route>
+
+                {/* ✅ নতুন পরিবর্তন: Not Found রুটটি সবার শেষে যোগ করা হয়েছে */}
+                {/* এটি অন্য কোনো রুটের সাথে না মিললে প্রদর্শিত হবে */}
+                <Route path="*" element={<NotFoundPage />} />
             </Route>
         </Routes>
     );

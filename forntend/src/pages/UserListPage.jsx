@@ -3,6 +3,9 @@ import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { FiTrash2, FiToggleLeft, FiToggleRight, FiEye, FiX, FiSearch, FiRotateCcw, FiLoader, FiAlertCircle } from 'react-icons/fi';
 
+// ✅ পরিবর্তন: Vite-এর জন্য এনভায়রনমেন্ট ভেরিয়েবল ব্যবহারের সঠিক নিয়ম
+const API_BASE_URL = import.meta.env.VITE_API_URL || '';
+
 // Modal Component (অপরিবর্তিত)
 const UserDetailsModal = ({ user, onClose }) => {
     if (!user) return null;
@@ -35,7 +38,7 @@ const UserDetailsModal = ({ user, onClose }) => {
     );
 };
 
-// মোবাইল ডিভাইসের জন্য User Card কম্পোনেন্ট
+// মোবাইল ডিভাইসের জন্য User Card কম্পোনেন্ট (অপরিবর্তিত)
 const UserCard = ({ user, onStatusToggle, onDelete, onViewDetails, currentAdminId }) => (
     <div className="bg-white p-4 rounded-lg shadow-md border border-gray-200">
         <div className="flex justify-between items-start mb-3">
@@ -52,7 +55,6 @@ const UserCard = ({ user, onStatusToggle, onDelete, onViewDetails, currentAdminI
             <button
                 onClick={() => onStatusToggle(user)}
                 disabled={user.role === 'admin'}
-                // ✅✅✅ মূল পরিবর্তনটি এই লাইনে করা হয়েছে ✅✅✅
                 className={`flex items-center text-sm font-semibold px-3 py-1.5 rounded-md transition-colors ${user.isActive ? 'text-red-600 bg-red-50 hover:bg-red-100' : 'text-green-600 bg-green-50 hover:bg-green-100'} disabled:opacity-50 disabled:cursor-not-allowed`}
             >
                 {user.isActive ? <FiToggleRight size={20} /> : <FiToggleLeft size={20} />}
@@ -92,7 +94,7 @@ const UserListPage = () => {
             setError('');
             try {
                 const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
-                const { data } = await axios.get('/api/admin/users', config);
+                const { data } = await axios.get(`${API_BASE_URL}/api/admin/users`, config);
                 setUsers(data);
                 setFilteredUsers(data);
             } catch (err) {
@@ -112,7 +114,10 @@ const UserListPage = () => {
             result = result.filter(user => !user.isActive);
         }
         if (searchTerm) {
-            result = result.filter(user => user._id.toLowerCase().includes(searchTerm.toLowerCase()));
+            result = result.filter(user => 
+                user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                user.email.toLowerCase().includes(searchTerm.toLowerCase())
+            );
         }
         setFilteredUsers(result);
     }, [searchTerm, filter, users]);
@@ -122,7 +127,7 @@ const UserListPage = () => {
         if (window.confirm(`Are you sure you want to ${user.isActive ? 'ban' : 'unban'} this user?`)) {
             try {
                 const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
-                const { data } = await axios.put(`/api/admin/users/${user._id}`, { isActive: !user.isActive }, config);
+                const { data } = await axios.put(`${API_BASE_URL}/api/admin/users/${user._id}`, { isActive: !user.isActive }, config);
                 setUsers(users.map(u => (u._id === data._id ? data : u)));
             } catch (err) {
                 alert('Failed to update user status.');
@@ -136,7 +141,7 @@ const UserListPage = () => {
         if (window.confirm('Are you sure you want to permanently delete this user?')) {
             try {
                 const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
-                await axios.delete(`/api/admin/users/${userToDelete._id}`, config);
+                await axios.delete(`${API_BASE_URL}/api/admin/users/${userToDelete._id}`, config);
                 setUsers(users.filter(u => u._id !== userToDelete._id));
             } catch (err) {
                 alert('Failed to delete user.');
@@ -148,8 +153,8 @@ const UserListPage = () => {
         if (window.confirm('Are you sure you want to unban all currently banned users?')) {
             try {
                 const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
-                await axios.put(`/api/admin/users/unban-all`, {}, config);
-                const { data } = await axios.get('/api/admin/users', config);
+                await axios.put(`${API_BASE_URL}/api/admin/users/unban-all`, {}, config);
+                const { data } = await axios.get(`${API_BASE_URL}/api/admin/users`, config);
                 setUsers(data);
                 alert('All banned users have been successfully unbanned.');
             } catch (err) {
@@ -179,7 +184,7 @@ const UserListPage = () => {
             <div className="mb-6 relative">
                 <input 
                     type="text"
-                    placeholder="Search by User ID..."
+                    placeholder="Search by Name or Email..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
