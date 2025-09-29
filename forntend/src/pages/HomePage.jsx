@@ -17,12 +17,8 @@ const HomePage = () => {
         const fetchProductCategories = async () => {
             try {
                 setLoading(true);
-                // ✅ Backend থেকে ক্যাটাগরি ফেচ
                 const { data } = await axios.get(`${API_URL}/api/categories`);
-
-                // ✅ শুধু যেসব ক্যাটাগরিতে প্রোডাক্ট আছে সেগুলোই দেখানো হবে
                 const categoriesWithProducts = data.filter(cat => cat.productCount > 0);
-
                 setProductCategories(categoriesWithProducts || []);
             } catch (err) {
                 setError('Could not load categories. Please try again.');
@@ -44,7 +40,7 @@ const HomePage = () => {
             <div className="container mx-auto p-4 sm:p-6 space-y-12">
                 <Searchbar />
                 <HeroSection />
-                <Category /> {/* Page Categories */}
+                <Category />
             </div>
 
             {/* --- Product Sections by Category --- */}
@@ -52,19 +48,17 @@ const HomePage = () => {
                 <p className="text-center py-10 font-semibold">Loading product sections...</p>
             ) : (
                 productCategories.map(category => (
-                    <div key={category._id}>
-                        <ProductSection
-                            title={category.name}
-                            categorySlug={category.slug}
-                        />
-                    </div>
+                    <ProductSection
+                        key={category._id}
+                        title={category.name}
+                        categorySlug={category.slug}
+                    />
                 ))
             )}
 
             {/* --- All Products Section --- */}
-            <div>
-                <ProductSection title="All Products" />
-            </div>
+            {/* ✅✅✅ কোনো পরিবর্তন ছাড়াই এটি এখন কাজ করবে ✅✅✅ */}
+            <ProductSection title="All Products" />
         </div>
     );
 };

@@ -143,63 +143,48 @@ export const deleteProduct = asyncHandler(async (req, res) => {
     }
 });
 
-// ✅✅✅ FIXED: getProducts function with proper filtering
 // @desc    Fetch all products with filtering and pagination
 export const getProducts = asyncHandler(async (req, res) => {
-    // পেজিনেশনের জন্য limit এবং page ভ্যারিয়েবল
     const limit = parseInt(req.query.limit) || 12;
     const page = parseInt(req.query.page) || 1;
-
-    // URL থেকে পাওয়া কোয়েরি প্যারামিটার
     const { category: categorySlug, pageCategory } = req.query;
     
-    // ডাটাবেসে খোঁজার জন্য ফিল্টার অবজেক্ট
     const filter = {};
 
-    // ✅ FIX 1: categorySlug দিয়ে ফিল্টারিং উন্নত করা
     if (categorySlug) {
         const category = await Category.findOne({ slug: categorySlug });
         if (category) {
-            // প্রোডাক্টের categories অ্যারেতে এই ক্যাটাগরির আইডি আছে কিনা তা চেক করা হচ্ছে
             filter.categories = { $in: [category._id] };
         } else {
-            // যদি slug দিয়ে কোনো ক্যাটাগরি না পাওয়া যায়, তবে খালি ফলাফল পাঠানো হবে
             return res.json({ 
                 products: [], 
                 page: 1, 
                 pages: 0, 
                 total: 0,
-                message: 'Category not found'
             });
         }
     }
 
-    // ✅ FIX 2: pageCategory ফিল্টারিং উন্নত করা (case-insensitive)
-    if (pageCategory) {
-        filter.pageCategory = { 
-            $regex: new RegExp(`^${pageCategory}$`, 'i') 
+    // ✅✅✅ মূল পরিবর্তন এখানে ✅✅✅
+    // যদি pageCategory থাকে এবং সেটা 'all-products' না হয়, তবেই ফিল্টার যোগ হবে
+    if (pageCategory && pageCategory.toLowerCase() !== 'all-products') {
+        filter.pageCategory = {
+            $regex: new RegExp(`^${pageCategory}$`, 'i')
         };
     }
 
-    console.log('Filter being applied:', filter); // ডিবাগিং জন্য
-
-    // ফিল্টার অনুযায়ী মোট প্রোডাক্ট সংখ্যা গণনা
     const count = await Product.countDocuments(filter);
-
-    // ফিল্টার এবং পেজিনেশন অনুযায়ী প্রোডাক্ট খোঁজা
     const products = await Product.find(filter)
         .populate('categories', 'name slug')
         .sort({ createdAt: -1 })
         .limit(limit)
         .skip(limit * (page - 1));
 
-    // চূড়ান্ত ফলাফল পাঠানো
     res.json({
         products,
         page,
         pages: Math.ceil(count / limit),
         total: count,
-        filters: { categorySlug, pageCategory } // ডিবাগিং জন্য
     });
 });
 
@@ -261,3 +246,14 @@ export const createProductReview = asyncHandler(async (req, res) => {
         throw new Error('Product not found');
     }
 });
+
+
+
+
+
+
+
+
+
+
+

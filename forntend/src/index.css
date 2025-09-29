@@ -28,3 +28,11 @@
     background-color: #4f46e5; /* Indigo color */
     opacity: 1;
 }
+
+
+.swiper-button-prev,
+.swiper-button-next {
+    display: none;
+}
+
+

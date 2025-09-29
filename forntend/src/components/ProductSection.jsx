@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import ProductCard from './ProductCard';
 import { API_URL } from '../apiConfig';
@@ -18,8 +19,7 @@ const ProductSkeleton = () => (
     </div>
 );
 
-// ✅ নতুন পরিবর্তন: onSeeAll prop যুক্ত করা হয়েছে
-const ProductSection = ({ title, categorySlug, onSeeAll }) => {
+const ProductSection = ({ title, categorySlug }) => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -28,14 +28,15 @@ const ProductSection = ({ title, categorySlug, onSeeAll }) => {
         const fetchProducts = async () => {
             setLoading(true);
             try {
-                let endpoint = `${API_URL}/api/products?limit=10`;
-                if (categorySlug) {
-                    endpoint = `${API_URL}/api/products?category=${categorySlug}&limit=10`;
-                }
+                const endpoint = categorySlug
+                    ? `${API_URL}/api/products?category=${categorySlug}&limit=10`
+                    : `${API_URL}/api/products?limit=10`;
+                
                 const { data } = await axios.get(endpoint);
                 setProducts(data.products || []);
             } catch (err) {
                 setError(`Failed to load ${title}.`);
+                console.error(err);
             } finally {
                 setLoading(false);
             }
@@ -44,21 +45,23 @@ const ProductSection = ({ title, categorySlug, onSeeAll }) => {
     }, [categorySlug, title]);
 
     const renderContent = () => {
-        if (loading) return (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                {Array.from({ length: 4 }).map((_, index) => <ProductSkeleton key={index} />)}
-            </div>
-        );
-        if (error) return <p className="text-center text-red-500">{error}</p>;
-        if (products.length === 0) return <p className="text-center text-gray-500">No products found.</p>;
+        if (loading) {
+            return (
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                    {Array.from({ length: 5 }).map((_, index) => <ProductSkeleton key={index} />)}
+                </div>
+            );
+        }
+        if (error) return <p className="text-center text-red-500 py-8">{error}</p>;
+        if (products.length === 0) return <p className="text-center text-gray-500 py-8">No products found in this section.</p>;
 
         return (
             <Swiper
                 modules={[Autoplay, Navigation]}
                 spaceBetween={16}
                 slidesPerView={2}
-                loop={products.length > 2}
-                autoplay={{ delay: 2500, disableOnInteraction: false, pauseOnMouseEnter: true }}
+                loop={products.length > 5}
+                autoplay={{ delay: 3000, disableOnInteraction: false, pauseOnMouseEnter: true }}
                 navigation={true}
                 breakpoints={{
                     640: { slidesPerView: 3 },
@@ -76,17 +79,35 @@ const ProductSection = ({ title, categorySlug, onSeeAll }) => {
         );
     };
 
+    // ✅✅✅ মূল পরিবর্তন এখানে ✅✅✅
+    // "View All" বাটনের জন্য একটি ভ্যারিয়েবল তৈরি করা হচ্ছে
+    const viewAllLink = categorySlug ? `/category/${categorySlug}` : `/page/all-products`;
+
     return (
-        <section className="py-8">
+        <section className="py-8 sm:py-12">
             <div className="container mx-auto px-4">
-           
+                <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">{title}</h2>
+                    {/* বড় স্ক্রিনের জন্য "View All" বাটন */}
+                    <Link
+                        to={viewAllLink}
+                        className="hidden sm:inline-block bg-gray-200 text-gray-800 px-5 py-2 rounded-lg text-sm font-semibold hover:bg-gray-300 transition-colors"
+                    >
+                        {categorySlug ? 'See All' : 'View All Products'}
+                    </Link>
+                </div>
 
                 {renderContent()}
                 
-                {/* ✅ পরিবর্তন: ছোট ডিভাইসের জন্যও <button> ব্যবহার করা হয়েছে */}
-                {!loading && products.length > 2 && categorySlug && (
+                {/* ছোট স্ক্রিনের জন্য "View All" বাটন */}
+                {!loading && products.length > 0 && (
                     <div className="text-center mt-8 sm:hidden">
-                
+                        <Link
+                            to={viewAllLink}
+                            className="inline-block bg-gray-200 text-gray-800 px-8 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-colors"
+                        >
+                            {categorySlug ? `View All ${title}` : 'View All Products'}
+                        </Link>
                     </div>
                 )}
             </div>

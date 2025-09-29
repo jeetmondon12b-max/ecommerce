@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext.jsx';
 import { useCart } from '../context/CartContext.jsx';
 import { FaShoppingCart, FaShippingFast, FaCheckCircle, FaHeart } from 'react-icons/fa';
 import toast, { Toaster } from 'react-hot-toast';
-import { API_URL } from '../apiConfig.js'; // ✅ পরিবর্তন: API_URL ইম্পোর্ট করা হয়েছে
+import { API_URL } from '../apiConfig.js';
 
 // Skeleton Loader Component
 const ProductDetailSkeleton = () => (
@@ -55,11 +55,9 @@ export default function ProductDetailsPage() {
         const fetchProduct = async () => {
             try {
                 setLoading(true);
-                // ✅ পরিবর্তন: API URL এখন ডাইনামিক
                 const { data } = await axios.get(`${API_URL}/api/products/${id}`);
                 setProduct(data);
                 if (data.image) {
-                    // ✅ পরিবর্তন: ছবির URL এখন ডাইনামিক
                     setMainImage(`${API_URL}${data.image}`);
                 }
             } catch (error) {
@@ -121,7 +119,6 @@ export default function ProductDetailsPage() {
         }
         try {
             const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
-            // ✅ পরিবর্তন: API URL এখন ডাইনামিক
             await axios.post(`${API_URL}/api/wishlist`, { productId: product._id }, config);
             toast.success('Added to your wishlist!');
         } catch (error) {
@@ -160,11 +157,9 @@ export default function ProductDetailsPage() {
                         <div className="flex gap-3 overflow-x-auto pb-2">
                             {allImages.map((img, index) => (
                                 <img key={index} 
-                                    // ✅ পরিবর্তন: ছবির URL এখন ডাইনামিক
                                     src={`${API_URL}${img}`} 
                                     alt={`gallery-${index}`}
                                     className={`flex-shrink-0 w-20 h-20 object-cover rounded-md cursor-pointer border-2 transition-all ${mainImage.includes(img) ? 'border-indigo-500 scale-105' : 'border-transparent hover:border-gray-300'}`}
-                                    // ✅ পরিবর্তন: ছবির URL এখন ডাইনামিক
                                     onClick={() => setMainImage(`${API_URL}${img}`)}
                                 />
                             ))}
@@ -242,7 +237,8 @@ export default function ProductDetailsPage() {
                         
                         <div className="pt-4 space-y-4">
                             {product.countInStock > 0 ? (
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                // ✅✅✅ এই div এর ক্লাস পরিবর্তন করা হয়েছে ✅✅✅
+                                <div className="flex flex-col sm:flex-row gap-4">
                                     {isAlreadyInCart ? (
                                         <button disabled className="w-full flex items-center justify-center gap-2 bg-gray-200 text-gray-500 py-3 rounded-lg text-md font-semibold cursor-not-allowed">
                                             <FaCheckCircle /> Added to Cart
