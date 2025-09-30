@@ -35,4 +35,4 @@ const LazyImage = ({ src, alt, className, eager = false }) => {
     );
 };
 
-export default LazyImage;
+export default LazyImage;   

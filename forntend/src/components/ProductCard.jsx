@@ -169,4 +169,4 @@ const ProductCard = ({ product }) => {
 };
 
 // ✅ অপটিমাইজেশন: React.memo ব্যবহার করে অপ্রয়োজনীয় রি-রেন্ডার বন্ধ করা হয়েছে
-export default React.memo(ProductCard);
+export default React.memo(ProductCard);   

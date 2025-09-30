@@ -47,5 +47,5 @@ const CategoryMenu = () => {
         </section>
     );
 };
-
+  
 export default CategoryMenu;

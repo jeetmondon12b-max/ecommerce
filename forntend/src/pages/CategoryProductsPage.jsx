@@ -124,4 +124,4 @@ const CategoryProductsPage = () => {
     );
 };
 
-export default CategoryProductsPage;
+export default CategoryProductsPage;  

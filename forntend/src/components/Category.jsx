@@ -153,7 +153,7 @@ const Category = () => {
                 </div>
             </div>
         </section>
-    );
+    );  
 };
 
 export default Category;

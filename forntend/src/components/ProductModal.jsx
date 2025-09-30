@@ -205,4 +205,4 @@ const ProductModal = ({ categorySlug, categoryName, isOpen, onClose }) => {
     );
 };
 
-export default ProductModal;
+export default ProductModal;  

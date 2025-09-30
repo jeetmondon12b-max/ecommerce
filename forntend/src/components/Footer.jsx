@@ -77,7 +77,7 @@ const Footer = () => {
             Copyright &copy; {new Date().getFullYear()}  Meer Ishrak. All Rights Reserved.
           </p>
           <p>
-            Developed by <a href="https://your-portfolio-link.com" target="_blank" rel="noopener noreferrer" className="font-semibold text-white hover:underline">Meer Ishrak</a>
+            Developed by   <a href="https://your-portfolio-link.com" target="_blank" rel="noopener noreferrer" className="font-semibold text-white hover:underline">Meer Ishrak</a>
           </p>
         </div>
       </div>

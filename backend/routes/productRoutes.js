@@ -59,4 +59,4 @@ router.route('/:id')
     // DELETE /api/products/:id -> Delete a product
     .delete(protect, admin, deleteProduct);
 
-export default router;
+export default router;  
