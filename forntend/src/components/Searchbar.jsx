@@ -50,30 +50,17 @@ const Searchbar = () => {
     
     return (
         <div ref={searchContainerRef} className="w-full max-w-3xl mx-auto relative px-4 md:px-0">
-            {/* Main container with responsive classes */}
-            <div className="relative w-full bg-white rounded-xl md:rounded-full shadow-lg border overflow-hidden flex flex-col md:flex-row">
+            {/* Main container: Now always a horizontal row */}
+            <div className="flex w-full items-center bg-white rounded-full shadow-lg border overflow-hidden">
                 
-                {/* Search Input - Top on mobile, middle on desktop */}
-                <div className="flex-grow flex items-center border-b md:border-b-0 md:border-r order-1 md:order-2">
-                    <FiSearch className="text-gray-400 mx-4" />
-                    <input
-                        type="text"
-                        placeholder="Search for products..."
-                        className="w-full h-full py-4 md:py-3 bg-transparent focus:outline-none"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        onKeyPress={(e) => e.key === 'Enter' && handleSearch(searchQuery)}
-                    />
-                </div>
-
-                {/* Category Dropdown - Left on desktop, part of bottom row on mobile */}
-                <div className="relative order-2 md:order-1">
-                    <button onClick={() => setDropdownOpen(!isDropdownOpen)} className="flex items-center justify-between w-full md:w-auto h-full px-6 py-3 text-sm font-semibold text-gray-700 bg-gray-50 hover:bg-gray-100 md:rounded-l-full focus:outline-none">
+                {/* Category Dropdown */}
+                <div className="relative">
+                    <button onClick={() => setDropdownOpen(!isDropdownOpen)} className="flex items-center h-full px-5 py-3 text-sm font-semibold text-gray-700 bg-gray-50 hover:bg-gray-100 focus:outline-none border-r">
                         <span>{category}</span>
                         <FiChevronDown className={`ml-2 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
                     </button>
                     {isDropdownOpen && (
-                        <div className="absolute left-0 mt-1 w-full md:w-48 bg-white rounded-md shadow-xl z-10">
+                        <div className="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-xl z-10">
                             {categories.map((cat) => (
                                 <a key={cat} href="#" onClick={(e) => { e.preventDefault(); setCategory(cat); setDropdownOpen(false); }} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                     {cat}
@@ -83,10 +70,26 @@ const Searchbar = () => {
                     )}
                 </div>
 
-                {/* Search Button - Right on desktop, part of bottom row on mobile */}
-                <button onClick={() => handleSearch(searchQuery)} className="w-full md:w-auto px-8 py-4 md:py-3 font-bold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none md:rounded-r-full order-3">
-                    Search
-                </button>
+                {/* Search Input & Button Wrapper */}
+                <div className="relative flex-grow flex items-center">
+                    <FiSearch className="absolute left-4 text-gray-400" />
+                    <input
+                        type="text"
+                        placeholder="Search for products..."
+                        className="w-full h-full py-3 pl-12 pr-14 bg-transparent focus:outline-none"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        onKeyPress={(e) => e.key === 'Enter' && handleSearch(searchQuery)}
+                    />
+                    {/* Search Button: Positioned inside the input wrapper */}
+                    <button 
+                        onClick={() => handleSearch(searchQuery)} 
+                        className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none"
+                        aria-label="Search"
+                    >
+                        <FiSearch size={18} />
+                    </button>
+                </div>
             </div>
 
             {/* Suggestions Dropdown */}

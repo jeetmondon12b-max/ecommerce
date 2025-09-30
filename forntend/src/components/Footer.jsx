@@ -74,7 +74,7 @@ const Footer = () => {
       <div className="border-t border-gray-700">
         <div className="container mx-auto px-6 py-4 flex flex-col sm:flex-row justify-between items-center text-sm">
           <p className="mb-2 sm:mb-0 text-center sm:text-left">
-            Copyright &copy; {new Date().getFullYear()} ishraak. All Rights Reserved.
+            Copyright &copy; {new Date().getFullYear()}  Meer Ishrak. All Rights Reserved.
           </p>
           <p>
             Developed by <a href="https://your-portfolio-link.com" target="_blank" rel="noopener noreferrer" className="font-semibold text-white hover:underline">Meer Ishrak</a>

@@ -1,12 +1,12 @@
-import { useState } from "react";
+import React, { useState } from "react"; // 🚀 পরিবর্তন: React ইম্পোর্ট করা হয়েছে
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from '../context/AuthContext';
 import { API_URL } from '../apiConfig';
 import { FiUser, FiPhone, FiMapPin, FiChevronDown, FiChevronUp, FiLoader } from 'react-icons/fi';
 
-// Order Summary Component (ডেস্কটপ এবং অ্যাকর্ডিয়ন উভয়ের জন্য)
-const OrderSummary = ({ products, total, discount, shippingFee, couponCode }) => (
+// 🚀 পরিবর্তন: কম্পোনেন্টটি React.memo দিয়ে র‍্যাপ করা হয়েছে অপ্রয়োজনীয় রি-রেন্ডার বন্ধ করার জন্য
+const OrderSummary = React.memo(({ products, total, discount, shippingFee, couponCode }) => (
     <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-lg border">
         <h2 className="text-xl font-bold text-gray-800 border-b pb-4 mb-4">Order Summary</h2>
         <div className="space-y-4 mb-6 max-h-60 overflow-y-auto pr-2">
@@ -14,7 +14,15 @@ const OrderSummary = ({ products, total, discount, shippingFee, couponCode }) =>
                 <div key={item.cartId || index} className="flex justify-between items-center">
                     <div className="flex items-center gap-4">
                         <div className="relative">
-                            <img src={`${API_URL}${item.image}`} alt={item.name} className="w-16 h-16 object-cover rounded-md"/>
+                            {/* 🖼️ পরিবর্তন: ইমেজে loading="lazy" যোগ করা হয়েছে */}
+                            <img 
+                                src={`${API_URL}${item.image}`} 
+                                alt={item.name} 
+                                className="w-16 h-16 object-cover rounded-md"
+                                loading="lazy"
+                                width="64"
+                                height="64"
+                            />
                             <span className="absolute -top-2 -right-2 bg-gray-700 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">{item.quantity}</span>
                         </div>
                         <div>
@@ -51,7 +59,7 @@ const OrderSummary = ({ products, total, discount, shippingFee, couponCode }) =>
             <p className="text-gray-600 mt-1">Cash on Delivery</p>
         </div>
     </div>
-);
+));
 
 
 export default function ShippingPage() {
@@ -64,7 +72,7 @@ export default function ShippingPage() {
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
-    const [isSummaryOpen, setIsSummaryOpen] = useState(false); // Accordion state
+    const [isSummaryOpen, setIsSummaryOpen] = useState(false);
     
     const [form, setForm] = useState({
         fullName: userInfo?.shippingAddress?.fullName || userInfo?.name || "",
@@ -118,7 +126,7 @@ export default function ShippingPage() {
             <div className="container mx-auto max-w-6xl">
                 <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
                     
-                    {/* Mobile: Order Summary Accordion (শুধুমাত্র ছোট স্ক্রিনে দেখা যাবে) */}
+                    {/* Mobile: Order Summary Accordion */}
                     <div className="lg:hidden">
                         <div className="bg-white rounded-2xl shadow-lg border">
                             <button onClick={() => setIsSummaryOpen(!isSummaryOpen)} className="w-full p-4 flex justify-between items-center">
@@ -167,7 +175,7 @@ export default function ShippingPage() {
                         </div>
                     </div>
 
-                    {/* Right Column: 'Your Order' Summary (শুধুমাত্র বড় স্ক্রিনে দেখা যাবে) */}
+                    {/* Right Column: 'Your Order' Summary */}
                     <div className="w-full lg:w-2/5 hidden lg:block">
                         <div className="lg:sticky lg:top-8">
                              <OrderSummary products={productsToOrder} total={total} discount={discount} shippingFee={shippingFee} couponCode={couponCode}/>

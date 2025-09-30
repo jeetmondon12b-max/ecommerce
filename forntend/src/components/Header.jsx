@@ -4,11 +4,11 @@ import { useAuth } from '../context/AuthContext.jsx';
 import { useCart } from '../context/CartContext.jsx';
 import {
     FiMenu, FiX, FiChevronDown, FiGrid, FiUsers, FiPackage,
-    FiShoppingBag, FiLogOut, FiList, FiHeart, FiTag, FiLayers, FiImage, FiShoppingCart, FiUser, FiHome
+    FiShoppingBag, FiLogOut, FiHeart, FiTag, FiLayers, FiImage, FiShoppingCart, FiUser, FiHome
 } from 'react-icons/fi';
 import toast, { Toaster } from 'react-hot-toast';
 
-// Profile Dropdown Component
+// Profile Dropdown Component (অপরিবর্তিত)
 const ProfileDropdown = ({ userInfo, onLogout }) => {
     const [isOpen, setIsOpen] = useState(false);
 
@@ -61,8 +61,9 @@ const ProfileDropdown = ({ userInfo, onLogout }) => {
     );
 };
 
-// Category Dropdown Component for Admin
+// Category Dropdown Component for Admin (অপরিবর্তিত)
 const CategoryDropdown = ({ isMobile, onClick }) => {
+    // This component remains unchanged
     const [isOpen, setIsOpen] = useState(false);
     if (isMobile) {
         return (
@@ -97,42 +98,65 @@ const CategoryDropdown = ({ isMobile, onClick }) => {
     )
 };
 
-// Navigation Links Component for both Admins and Users
-const NavLinks = ({ isMobile, onClick, userInfo }) => {
+
+// ✅✅✅ NavLinks Component - এখানেই মূল পরিবর্তনটি করা হয়েছে ✅✅✅
+const NavLinks = ({ isMobile, onClick, userInfo, onLogout }) => {
     const activeDesktop = { color: '#4f46e5', backgroundColor: '#eef2ff' };
     const activeMobile = { backgroundColor: 'rgba(255, 255, 255, 0.1)', color: 'white' };
     const getStyle = ({ isActive }) => (isActive ? (isMobile ? activeMobile : activeDesktop) : undefined);
+    
+    // স্টাইল ক্লাসগুলো অপরিবর্তিত
     const navLinkMobile = "flex items-center gap-3 w-full text-lg font-medium p-3 rounded-lg transition-colors hover:bg-indigo-600";
     const navLinkDesktop = "flex items-center gap-2 text-gray-600 font-semibold px-3 py-2 rounded-lg transition-colors hover:bg-gray-100";
+
+    // ✅ পরিবর্তন: isMobile prop-এর উপর ভিত্তি করে সঠিক ক্লাস নির্ধারণ করা হচ্ছে
+    const navLinkClass = isMobile ? navLinkMobile : navLinkDesktop;
 
     return (
         <>
             {userInfo && userInfo.role === 'admin' ? (
-                // ✅ Admin Links
+                // Admin Links
                 <>
-                    <NavLink to="/admin" end style={getStyle} className={isMobile ? navLinkMobile : navLinkDesktop} onClick={onClick}><FiGrid />Dashboard</NavLink>
-                    <NavLink to="/admin/products" style={getStyle} className={isMobile ? navLinkMobile : navLinkDesktop} onClick={onClick}><FiPackage />Products</NavLink>
+                    {/* <<< এখানে navLinkMobile-এর বদলে navLinkClass ব্যবহার করা হয়েছে >>> */}
+                    <NavLink to="/admin" end style={getStyle} className={navLinkClass} onClick={onClick}><FiGrid />Dashboard</NavLink>
+                    <NavLink to="/admin/products" style={getStyle} className={navLinkClass} onClick={onClick}><FiPackage />Products</NavLink>
                     <CategoryDropdown isMobile={isMobile} onClick={onClick} />
-                    <NavLink to="/admin/coupons" style={getStyle} className={isMobile ? navLinkMobile : navLinkDesktop} onClick={onClick}><FiTag />Coupons</NavLink>
-                    <NavLink to="/admin/banners" style={getStyle} className={isMobile ? navLinkMobile : navLinkDesktop} onClick={onClick}><FiImage />Banners</NavLink>
-                    <NavLink to="/admin/orders" style={getStyle} className={isMobile ? navLinkMobile : navLinkDesktop} onClick={onClick}><FiShoppingBag />Orders</NavLink>
-                    <NavLink to="/admin/users" style={getStyle} className={isMobile ? navLinkMobile : navLinkDesktop} onClick={onClick}><FiUsers />Users</NavLink>
-                    <NavLink to="/admin/wishlist-summary" style={getStyle} className={isMobile ? navLinkMobile : navLinkDesktop} onClick={onClick}><FiHeart />Wishlist</NavLink>
+                    <NavLink to="/admin/coupons" style={getStyle} className={navLinkClass} onClick={onClick}><FiTag />Coupons</NavLink>
+                    <NavLink to="/admin/banners" style={getStyle} className={navLinkClass} onClick={onClick}><FiImage />Banners</NavLink>
+                    <NavLink to="/admin/orders" style={getStyle} className={navLinkClass} onClick={onClick}><FiShoppingBag />Orders</NavLink>
+                    <NavLink to="/admin/users" style={getStyle} className={navLinkClass} onClick={onClick}><FiUsers />Users</NavLink>
+                    <NavLink to="/admin/wishlist-summary" style={getStyle} className={navLinkClass} onClick={onClick}><FiHeart />Wishlist</NavLink>
                 </>
             ) : (
-                // ✅ Regular User Links
+                // Regular User Links
                 <>
-                    <NavLink to="/" style={getStyle} className={isMobile ? navLinkMobile : navLinkDesktop} onClick={onClick}><FiHome /> Home</NavLink>
-                    <NavLink to="/my-orders" style={getStyle} className={isMobile ? navLinkMobile : navLinkDesktop} onClick={onClick}><FiShoppingBag /> My Orders</NavLink>
-                    <NavLink to="/wishlist" style={getStyle} className={isMobile ? navLinkMobile : navLinkDesktop} onClick={onClick}><FiHeart /> Wishlist</NavLink>
+                    {/* <<< এখানেও navLinkMobile-এর বদলে navLinkClass ব্যবহার করা হয়েছে >>> */}
+                    <NavLink to="/" style={getStyle} className={navLinkClass} onClick={onClick}><FiHome /> Home</NavLink>
+                    <NavLink to="/my-orders" style={getStyle} className={navLinkClass} onClick={onClick}><FiShoppingBag /> My Orders</NavLink>
+                    <NavLink to="/wishlist" style={getStyle} className={navLinkClass} onClick={onClick}><FiHeart /> Wishlist</NavLink>
                 </>
+            )}
+
+            {/* Logout Button (শুধুমাত্র মোবাইলের জন্য) */}
+            {userInfo && isMobile && (
+                <button
+                    onClick={() => {
+                        onClick(); // মেন্যু বন্ধ করার জন্য
+                        onLogout(); // লগআউট কনফার্মেশন দেখানোর জন্য
+                    }}
+                    className="flex items-center gap-3 w-full text-lg font-medium p-3 mt-2 rounded-lg transition-colors text-red-300 hover:bg-red-500 hover:text-white"
+                >
+                    <FiLogOut /> Logout
+                </button>
             )}
         </>
     );
 };
 
-// Main Header Component
+
+// Main Header Component (অপরিবর্তিত)
 const Header = () => {
+    // This component remains unchanged
     const { userInfo, logout } = useAuth();
     const { cartItems } = useCart();
     const navigate = useNavigate();
@@ -177,14 +201,14 @@ const Header = () => {
             <Toaster position="top-center" />
             <div className="container mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
                 <Link to="/" className="flex items-baseline gap-2 text-2xl sm:text-3xl font-extrabold text-indigo-600">
-                    <span>Demo </span>
+                    <span>Demo</span>
                     <span className="text-xs font-normal text-gray-400 hidden sm:inline">(Developed by Meer Ishrak)</span>
                 </Link>
                 
                 {/* Desktop Menu */}
                 <div className="hidden md:flex items-center gap-4">
                     <nav className="flex items-center gap-2">
-                        <NavLinks userInfo={userInfo} />
+                        <NavLinks userInfo={userInfo} isMobile={false} />
                     </nav>
                     
                     <div className="flex items-center gap-4">
@@ -230,8 +254,7 @@ const Header = () => {
                 <div className={`fixed inset-0 bg-black bg-opacity-50 transition-opacity ${isMenuOpen ? 'opacity-100' : 'opacity-0'}`} onClick={() => setIsMenuOpen(false)}></div>
                 <div className={`fixed inset-y-0 left-0 w-72 bg-indigo-700 text-white z-50 transform transition-transform duration-300 ${isMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
                     
-                    {/* ✅ মূল পরিবর্তন: h-full কে h-screen করা হয়েছে */}
-                    <div className="flex flex-col h-screen">
+                    <div className="flex flex-col h-full">
                         
                         {/* Header Section */}
                         <div className="p-5 flex-shrink-0">
@@ -248,44 +271,17 @@ const Header = () => {
                             )}
                         </div>
                         
-                        {/* Navigation Links - Scrollable */}
                         <nav className="flex-grow overflow-y-auto px-5 pb-4">
                             <div className="space-y-2">
-                                <NavLinks isMobile={true} onClick={() => setIsMenuOpen(false)} userInfo={userInfo} />
+                                <NavLinks 
+                                    isMobile={true} 
+                                    onClick={() => setIsMenuOpen(false)} 
+                                    userInfo={userInfo} 
+                                    onLogout={confirmLogout} 
+                                />
                             </div>
                         </nav>
-                        
-                        {/* Fixed Bottom Section */}
-                        <div className="p-5 border-t border-indigo-600 bg-indigo-700 flex-shrink-0">
-                            {userInfo ? (
-                                <button
-                                    onClick={() => {
-                                        setIsMenuOpen(false);
-                                        confirmLogout();
-                                    }}
-                                    className="flex items-center justify-center gap-3 w-full text-lg font-medium p-3 rounded-lg transition-colors bg-red-600 hover:bg-red-700 text-white"
-                                >
-                                    <FiLogOut size={18} /> Logout
-                                </button>
-                            ) : (
-                                <div className="space-y-2">
-                                    <Link
-                                        to="/login"
-                                        onClick={() => setIsMenuOpen(false)}
-                                        className="block w-full text-center bg-white text-indigo-700 font-semibold py-3 rounded-lg hover:bg-gray-100"
-                                    >
-                                        Login
-                                    </Link>
-                                    <Link
-                                        to="/register"
-                                        onClick={() => setIsMenuOpen(false)}
-                                        className="block w-full text-center bg-indigo-800 font-semibold py-3 rounded-lg hover:bg-indigo-900"
-                                    >
-                                        Get Started
-                                    </Link>
-                                </div>
-                            )}
-                        </div>
+
                     </div>
                 </div>
             </div>
