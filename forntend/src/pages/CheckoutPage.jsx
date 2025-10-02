@@ -92,15 +92,16 @@ export default function CheckoutPage() {
                     Complete Your Order
                 </h2>
 
-                {/* --- Order Summary Section --- */}
                 <div className="border border-gray-200 bg-gray-50/50 rounded-xl p-4 space-y-4">
                     <h3 className="text-lg font-semibold text-gray-700">Order Summary ({itemsToCheckout.length} {itemsToCheckout.length > 1 ? 'items' : 'item'})</h3>
                     {itemsToCheckout.map((item, index) => (
                         <div key={item.cartId || item._id || index} className="flex items-center space-x-3 sm:space-x-4">
+                             {/* ✅ ফিক্স: ছবির URL থেকে ${API_URL} সরানো হয়েছে */}
                              <img 
-                                src={`${API_URL}${item.image}`} 
+                                src={item.image} 
                                 alt={item.name} 
                                 className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-lg border"
+                                loading="lazy"
                             />
                             <div className="flex-1">
                                 <p className="font-semibold text-gray-800">{item.name}</p>
@@ -112,7 +113,6 @@ export default function CheckoutPage() {
                     ))}
                 </div>
 
-                {/* --- Shipping Fee Section --- */}
                 <div>
                     <h4 className="text-lg font-semibold text-gray-800 mb-3 flex items-center"><FiTruck className="mr-2 text-gray-500"/>Shipping Method</h4>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -127,7 +127,6 @@ export default function CheckoutPage() {
                     </div>
                 </div>
 
-                {/* --- Coupon Section --- */}
                 <div>
                     <h4 className="text-lg font-semibold text-gray-800 mb-3 flex items-center"><FiTag className="mr-2 text-gray-500"/>Apply Coupon</h4>
                     <div className="flex flex-col sm:flex-row gap-3">
@@ -151,7 +150,6 @@ export default function CheckoutPage() {
                     )}
                 </div>
 
-                {/* --- Total Calculation --- */}
                 <div className="border-t pt-6 space-y-2 text-base text-gray-600">
                     <div className="flex justify-between font-medium">
                         <span>Subtotal</span>
@@ -173,7 +171,6 @@ export default function CheckoutPage() {
                     </div>
                 </div>
                 
-                {/* --- Proceed Button --- */}
                 <button
                     onClick={handleNext}
                     className="w-full bg-indigo-600 text-white py-3.5 rounded-xl font-semibold text-lg hover:bg-indigo-700 transition-all duration-300 shadow-lg hover:shadow-indigo-500/50 transform hover:-translate-y-1"

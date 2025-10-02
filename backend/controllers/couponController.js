@@ -2,7 +2,6 @@ import Coupon from "../models/Coupon.js";
 import asyncHandler from 'express-async-handler';
 
 // @desc    Create a new coupon (Admin only)
-// ... আপনার createCoupon ফাংশন অপরিবর্তিত থাকবে ...
 export const createCoupon = asyncHandler(async (req, res) => {
     const { code, discount, minimumAmount, expiresAt, usageLimit } = req.body;
     
@@ -19,18 +18,24 @@ export const createCoupon = asyncHandler(async (req, res) => {
     
     const newCoupon = new Coupon({ code, discount, minimumAmount, expiresAt, usageLimit });
     await newCoupon.save();
-    res.status(201).json({ message: "✅ Coupon created successfully!", coupon: newCoupon });
+    res.status(201).json({ message: "Coupon created successfully!", coupon: newCoupon });
 });
 
-// @desc    Get all active coupons (Admin only)
-// ... আপনার getCoupons ফাংশন অপরিবর্তিত থাকবে ...
+// @desc    Get all coupons for the admin panel
 export const getCoupons = asyncHandler(async (req, res) => {
-    const coupons = await Coupon.find({ expiresAt: { $gte: new Date() } })
-                                  .sort({ createdAt: -1 });
+    // ✅ এই আপডেটের ফলে অ্যাডমিন প্যানেল থেকে সব কুপন (active/expired) দেখা যাবে
+    const { show } = req.query;
+    
+    let filter = {};
+    // যদি show=all প্যারামিটার না থাকে, তবে শুধুমাত্র active কুপন দেখানো হবে
+    if (show !== 'all') {
+        filter.expiresAt = { $gte: new Date() };
+    }
+
+    const coupons = await Coupon.find(filter).sort({ createdAt: -1 });
     res.status(200).json(coupons);
 });
 
-// ✅ নতুন ফাংশন: একটি কুপন ডিলেট করার জন্য
 // @desc    Delete a coupon (Admin only)
 // @route   DELETE /api/coupons/:id
 export const deleteCoupon = asyncHandler(async (req, res) => {
@@ -46,7 +51,6 @@ export const deleteCoupon = asyncHandler(async (req, res) => {
 });
 
 // @desc    Validate a coupon (Public)
-// ... আপনার validateCoupon ফাংশন অপরিবর্তিত থাকবে ...
 export const validateCoupon = asyncHandler(async (req, res) => {
     const { code, cartTotal } = req.body;
 

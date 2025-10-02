@@ -3,7 +3,6 @@ import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { FiTrash2, FiToggleLeft, FiToggleRight, FiEye, FiX, FiSearch, FiRotateCcw, FiLoader, FiAlertCircle } from 'react-icons/fi';
 
-// ✅ পরিবর্তন: Vite-এর জন্য এনভায়রনমেন্ট ভেরিয়েবল ব্যবহারের সঠিক নিয়ম
 const API_BASE_URL = import.meta.env.VITE_API_URL || '';
 
 // Modal Component (অপরিবর্তিত)
@@ -38,7 +37,7 @@ const UserDetailsModal = ({ user, onClose }) => {
     );
 };
 
-// মোবাইল ডিভাইসের জন্য User Card কম্পোনেন্ট (অপরিবর্তিত)
+// User Card Component (অপরিবর্তিত)
 const UserCard = ({ user, onStatusToggle, onDelete, onViewDetails, currentAdminId }) => (
     <div className="bg-white p-4 rounded-lg shadow-md border border-gray-200">
         <div className="flex justify-between items-start mb-3">
@@ -51,7 +50,7 @@ const UserCard = ({ user, onStatusToggle, onDelete, onViewDetails, currentAdminI
             </span>
         </div>
         <p className="text-sm text-gray-600 break-all mb-4">{user.email}</p>
-        <div className="border-t pt-3 flex justify-between items-center gap-2">
+        <div className="border-t pt-3 flex justify-end items-center gap-3">
             <button
                 onClick={() => onStatusToggle(user)}
                 disabled={user.role === 'admin'}
@@ -60,22 +59,21 @@ const UserCard = ({ user, onStatusToggle, onDelete, onViewDetails, currentAdminI
                 {user.isActive ? <FiToggleRight size={20} /> : <FiToggleLeft size={20} />}
                 <span className="ml-2">{user.isActive ? 'Ban' : 'Unban'}</span>
             </button>
-            <div className="flex items-center gap-2">
-                <button onClick={() => onViewDetails(user)} className="p-2 text-gray-500 hover:text-blue-600" title="View Details">
-                    <FiEye size={20} />
-                </button>
-                <button
-                    onClick={() => onDelete(user)}
-                    disabled={user.role === 'admin' || user._id === currentAdminId}
-                    className="p-2 text-gray-500 hover:text-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
-                    title={user.role === 'admin' ? 'Cannot delete admin' : 'Delete User'}
-                >
-                    <FiTrash2 size={20} />
-                </button>
-            </div>
+            <button onClick={() => onViewDetails(user)} className="p-2 text-gray-500 hover:text-blue-600" title="View Details">
+                <FiEye size={20} />
+            </button>
+            <button
+                onClick={() => onDelete(user)}
+                disabled={user.role === 'admin' || user._id === currentAdminId}
+                className="p-2 text-gray-500 hover:text-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                title={user.role === 'admin' ? 'Cannot delete admin' : 'Delete User'}
+            >
+                <FiTrash2 size={20} />
+            </button>
         </div>
     </div>
 );
+
 
 // Main User List Page Component
 const UserListPage = () => {
@@ -173,11 +171,12 @@ const UserListPage = () => {
     return (
         <div className="bg-gray-50 p-4 sm:p-6 rounded-2xl shadow-lg w-full">
             <div className="flex flex-col md:flex-row justify-between items-center mb-6 pb-4 border-b">
-                <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-4 md:mb-0">Manage Users ({filteredUsers.length})</h1>
-                <div className="flex items-center gap-2 flex-wrap justify-center">
-                    <button onClick={() => setFilter('all')} className={`px-4 py-2 text-sm sm:text-base rounded-lg font-semibold ${filter === 'all' ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-700'}`}>All Users</button>
-                    <button onClick={() => setFilter('banned')} className={`px-4 py-2 text-sm sm:text-base rounded-lg font-semibold ${filter === 'banned' ? 'bg-red-600 text-white' : 'bg-gray-200 text-gray-700'}`}>Banned Users</button>
-                    <button onClick={handleUnbanAll} className="flex items-center px-4 py-2 text-sm sm:text-base rounded-lg font-semibold bg-green-500 text-white"><FiRotateCcw className="mr-2"/>Unban All</button>
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-4 md:mb-0 text-center md:text-left">Manage Users ({filteredUsers.length})</h1>
+                {/* ✅ পরিবর্তন: এই div এবং এর ভেতরের বাটনগুলোতে ক্লাস পরিবর্তন করা হয়েছে */}
+                <div className="flex items-center gap-2 justify-center">
+                    <button onClick={() => setFilter('all')} className={`px-3 py-1.5 text-xs sm:text-sm rounded-lg font-semibold ${filter === 'all' ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-700'}`}>All Users</button>
+                    <button onClick={() => setFilter('banned')} className={`px-3 py-1.5 text-xs sm:text-sm rounded-lg font-semibold ${filter === 'banned' ? 'bg-red-600 text-white' : 'bg-gray-200 text-gray-700'}`}>Banned Users</button>
+                    <button onClick={handleUnbanAll} className="flex items-center px-3 py-1.5 text-xs sm:text-sm rounded-lg font-semibold bg-green-500 text-white"><FiRotateCcw className="mr-1.5"/>Unban All</button>
                 </div>
             </div>
             
@@ -251,4 +250,4 @@ const UserListPage = () => {
     );
 };
 
-export default UserListPage;  
+export default UserListPage;
