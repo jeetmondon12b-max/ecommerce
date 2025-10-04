@@ -4,7 +4,7 @@
 // import axios from 'axios';
 // import ProductCard from './ProductCard';
 // import { API_URL } from '../apiConfig';
-// import { useQuery } from '@tanstack/react-query'; // ✅ পরিবর্তন: useQuery ইম্পোর্ট করা হয়েছে
+// import { useQuery } from '@tanstack/react-query';
 
 // import { Swiper, SwiperSlide } from 'swiper/react';
 // import { Autoplay, Navigation } from 'swiper/modules';
@@ -21,7 +21,6 @@
 //     </div>
 // );
 
-// // ✅ পরিবর্তন: ডেটা আনার জন্য একটি আলাদা async ফাংশন তৈরি করা হয়েছে
 // const fetchProducts = async (categorySlug) => {
 //     const endpoint = categorySlug
 //         ? `${API_URL}/api/products?category=${categorySlug}&limit=10`
@@ -32,17 +31,15 @@
 // };
 
 // const ProductSection = ({ title, categorySlug }) => {
-//     // ✅ পরিবর্তন: useState এবং useEffect এর পরিবর্তে useQuery ব্যবহার করা হয়েছে
 //     const { 
 //         data: products, 
 //         isLoading, 
 //         isError, 
 //         error 
 //     } = useQuery({
-//         // প্রতিটি ক্যাটাগরির জন্য ইউনিক query key, যা ক্যাশিং এর জন্য জরুরি
 //         queryKey: ['products', categorySlug || 'all-products'], 
 //         queryFn: () => fetchProducts(categorySlug),
-//         staleTime: 1000 * 60 * 5, // ৫ মিনিটের জন্য ডেটা stale হবে না
+//         staleTime: 1000 * 60 * 5, // ৫ মিনিটের জন্য ডেটা ক্যাশে থাকবে
 //     });
 
 //     const renderContent = () => {
@@ -115,12 +112,15 @@
 // export default ProductSection;
 
 
+
+
+
 import React from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+// import axios from 'axios'; // ❌ অপ্রয়োজনীয়, তাই মুছে ফেলা হয়েছে
 import ProductCard from './ProductCard';
-import { API_URL } from '../apiConfig';
-import { useQuery } from '@tanstack/react-query';
+// import { API_URL } from '../apiConfig'; // ❌ অপ্রয়োজনীয়, তাই মুছে ফেলা হয়েছে
+// import { useQuery } from '@tanstack/react-query'; // ❌ অপ্রয়োজনীয়, তাই মুছে ফেলা হয়েছে
 
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Navigation } from 'swiper/modules';
@@ -137,37 +137,24 @@ const ProductSkeleton = () => (
     </div>
 );
 
-const fetchProducts = async (categorySlug) => {
-    const endpoint = categorySlug
-        ? `${API_URL}/api/products?category=${categorySlug}&limit=10`
-        : `${API_URL}/api/products?limit=10`;
-    
-    const { data } = await axios.get(endpoint);
-    return data.products || [];
-};
+// ❌ fetchProducts ফাংশনটি এখান থেকে মুছে ফেলা হয়েছে
 
-const ProductSection = ({ title, categorySlug }) => {
-    const { 
-        data: products, 
-        isLoading, 
-        isError, 
-        error 
-    } = useQuery({
-        queryKey: ['products', categorySlug || 'all-products'], 
-        queryFn: () => fetchProducts(categorySlug),
-        staleTime: 1000 * 60 * 5, // ৫ মিনিটের জন্য ডেটা ক্যাশে থাকবে
-    });
+// ✅ কম্পোনেন্টটি এখন props থেকে সরাসরি title, categorySlug, এবং products ডেটা গ্রহণ করে
+const ProductSection = ({ title, categorySlug, products }) => {
+    // ❌ useQuery এবং এর সাথে সম্পর্কিত সব কোড মুছে ফেলা হয়েছে
 
     const renderContent = () => {
-        if (isLoading) {
+        // ❌ isLoading এবং isError চেকগুলো আর এখানে প্রয়োজন নেই
+
+        // ✅ যদি কোনো প্রোডাক্ট না থাকে, তাহলে মেসেজ দেখানো হবে
+        if (!products || products.length === 0) {
+            // HomePage লোডিং অবস্থায় থাকলে products prop undefined থাকবে, তাই একটি placeholder দেখানো হচ্ছে
             return (
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                     {Array.from({ length: 5 }).map((_, index) => <ProductSkeleton key={index} />)}
                 </div>
             );
         }
-        if (isError) return <p className="text-center text-red-500 py-8">Error: {error.message}</p>;
-        if (!products || products.length === 0) return <p className="text-center text-gray-500 py-8">No products found in this section.</p>;
 
         return (
             <Swiper
@@ -193,7 +180,7 @@ const ProductSection = ({ title, categorySlug }) => {
         );
     };
 
-    const viewAllLink = categorySlug ? `/category/${categorySlug}` : `/page/all-products`;
+    const viewAllLink = categorySlug ? `/category/${categorySlug}` : `/page-category/All-Products`;
 
     return (
         <section className="py-8 sm:py-12">
@@ -210,7 +197,7 @@ const ProductSection = ({ title, categorySlug }) => {
 
                 {renderContent()}
                 
-                {!isLoading && products && products.length > 0 && (
+                {products && products.length > 0 && (
                     <div className="text-center mt-8 sm:hidden">
                         <Link
                             to={viewAllLink}
@@ -226,12 +213,6 @@ const ProductSection = ({ title, categorySlug }) => {
 };
 
 export default ProductSection;
-
-
-
-
-
-
 
 
 
