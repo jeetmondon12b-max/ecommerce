@@ -1,3 +1,5 @@
+
+
 // import React from "react";
 // import { Routes, Route, Outlet, useLocation } from "react-router-dom";
 
@@ -6,6 +8,7 @@
 // import Footer from "./components/Footer.jsx";
 // import AdminRoute from "./components/AdminRoute.jsx";
 // import ProtectedRoute from "./components/ProtectedRoute.jsx";
+// import BottomNav from "./components/BottomNav.jsx"; // BottomNav যোগ করা হলো
 
 // // Page Components
 // import HomePage from "./pages/HomePage.jsx";
@@ -18,10 +21,11 @@
 // import OrderSuccessPage from "./pages/OrderSuccessPage.jsx";
 // import MyOrdersPage from "./pages/MyOrdersPage.jsx";
 // import WishlistPage from "./pages/WishlistPage.jsx";
-// import OrderDetailsPage from "./pages/OrderDetailsPage.jsx";
+// // OrderDetailsPage আগে থেকেই ছিল, যদি না থাকে যোগ করুন
+// import OrderDetailsPage from "./pages/OrderDetailsPage.jsx"; 
 // import CategoryProductsPage from "./pages/CategoryProductsPage.jsx";
 // import SearchResultsPage from "./pages/SearchResultsPage.jsx";
-// import NotFoundPage from "./pages/NotFoundPage.jsx"; // ✅ নতুন পরিবর্তন: NotFoundPage ইম্পোর্ট করা হয়েছে
+// import NotFoundPage from "./pages/NotFoundPage.jsx";
 
 // // Admin Page Components
 // import AdminPage from "./pages/AdminPage.jsx";
@@ -33,22 +37,23 @@
 // import AdminCategoryPage from "./pages/AdminCategoryPage.jsx";
 // import AdminPageCategoryPage from "./pages/AdminPageCategoryPage.jsx";
 // import AdminBannerPage from "./pages/AdminBannerPage.jsx";
-
 // import CouponManagePage from "./pages/CouponManagePage.jsx";
 // import CouponForm from "./pages/cuponform.jsx";
 // import CouponListPage from "./pages/CouponListPage.jsx";
 
 // const AppLayout = () => {
 //     const location = useLocation();
-//     const isHomePage = location.pathname === '/';
+//     // অ্যাডমিন প্যানেলে ফুটার বা বটম ন্যাভিগেশন দেখাবে না
+//     const isAdminRoute = location.pathname.startsWith('/admin');
 
 //     return (
 //         <>
 //             <Header />
-//             <main className="min-h-screen">
+//             <main className="min-h-screen pb-20 md:pb-0"> {/* মোবাইলের বটম ন্যাভিগেশনের জন্য প্যাডিং */}
 //                 <Outlet />
 //             </main>
-//             {isHomePage && <Footer />}
+//             {!isAdminRoute && <Footer />}
+//             {!isAdminRoute && <BottomNav />} {/* শুধুমাত্র সাধারণ ব্যবহারকারীদের জন্য */}
 //         </>
 //     );
 // };
@@ -60,7 +65,10 @@
 //                 {/* --- Public Routes --- */}
 //                 <Route path="/" element={<HomePage />} />
 //                 <Route path="/search" element={<SearchResultsPage />} />
-//                 <Route path="/page/:pageCategoryName" element={<CategoryProductsPage />} />
+                
+//                 {/* ✅ সমাধান: "/page/" কে "/page-category/" দিয়ে পরিবর্তন করা হয়েছে */}
+//                 <Route path="/page-category/:pageCategoryName" element={<CategoryProductsPage />} />
+                
 //                 <Route path="/category/:categorySlug" element={<CategoryProductsPage />} />
 //                 <Route path="/product/:id" element={<ProductDetailsPage />} />
 //                 <Route path="/login" element={<LoginPage />} />
@@ -94,8 +102,6 @@
 //                     <Route path="coupons/list" element={<CouponListPage />} />
 //                 </Route>
 
-//                 {/* ✅ নতুন পরিবর্তন: Not Found রুটটি সবার শেষে যোগ করা হয়েছে */}
-//                 {/* এটি অন্য কোনো রুটের সাথে না মিললে প্রদর্শিত হবে */}
 //                 <Route path="*" element={<NotFoundPage />} />
 //             </Route>
 //         </Routes>
@@ -103,6 +109,9 @@
 // };
 
 // export default App;
+
+
+
 
 
 import React from "react";
@@ -113,7 +122,7 @@ import Header from "./components/Header.jsx";
 import Footer from "./components/Footer.jsx";
 import AdminRoute from "./components/AdminRoute.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
-import BottomNav from "./components/BottomNav.jsx"; // BottomNav যোগ করা হলো
+import BottomNav from "./components/BottomNav.jsx";
 
 // Page Components
 import HomePage from "./pages/HomePage.jsx";
@@ -126,7 +135,6 @@ import ShippingPage from "./pages/ShippingPage.jsx";
 import OrderSuccessPage from "./pages/OrderSuccessPage.jsx";
 import MyOrdersPage from "./pages/MyOrdersPage.jsx";
 import WishlistPage from "./pages/WishlistPage.jsx";
-// OrderDetailsPage আগে থেকেই ছিল, যদি না থাকে যোগ করুন
 import OrderDetailsPage from "./pages/OrderDetailsPage.jsx"; 
 import CategoryProductsPage from "./pages/CategoryProductsPage.jsx";
 import SearchResultsPage from "./pages/SearchResultsPage.jsx";
@@ -148,17 +156,17 @@ import CouponListPage from "./pages/CouponListPage.jsx";
 
 const AppLayout = () => {
     const location = useLocation();
-    // অ্যাডমিন প্যানেলে ফুটার বা বটম ন্যাভিগেশন দেখাবে না
     const isAdminRoute = location.pathname.startsWith('/admin');
 
     return (
         <>
             <Header />
-            <main className="min-h-screen pb-20 md:pb-0"> {/* মোবাইলের বটম ন্যাভিগেশনের জন্য প্যাডিং */}
+            {/* ✅ সমাধান: এই লাইনটিই BottomNav-এর জন্য জায়গা তৈরি করে, যাতে কন্টেন্ট এর পেছনে না যায় */}
+            <main className="min-h-screen pb-20 md:pb-0">
                 <Outlet />
             </main>
             {!isAdminRoute && <Footer />}
-            {!isAdminRoute && <BottomNav />} {/* শুধুমাত্র সাধারণ ব্যবহারকারীদের জন্য */}
+            {!isAdminRoute && <BottomNav />}
         </>
     );
 };
@@ -170,10 +178,7 @@ const App = () => {
                 {/* --- Public Routes --- */}
                 <Route path="/" element={<HomePage />} />
                 <Route path="/search" element={<SearchResultsPage />} />
-                
-                {/* ✅ সমাধান: "/page/" কে "/page-category/" দিয়ে পরিবর্তন করা হয়েছে */}
                 <Route path="/page-category/:pageCategoryName" element={<CategoryProductsPage />} />
-                
                 <Route path="/category/:categorySlug" element={<CategoryProductsPage />} />
                 <Route path="/product/:id" element={<ProductDetailsPage />} />
                 <Route path="/login" element={<LoginPage />} />
@@ -214,7 +219,3 @@ const App = () => {
 };
 
 export default App;
-
-
-
-

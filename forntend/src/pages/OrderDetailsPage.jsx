@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext.jsx';
 import { FiClipboard, FiUser, FiTruck, FiCreditCard } from 'react-icons/fi';
-import { API_URL } from '../apiConfig.js'; // ✅ পরিবর্তন: API_URL ইম্পোর্ট করা হয়েছে
+import { API_URL } from '../apiConfig.js';
 
 const OrderDetailsPage = () => {
     const { id: orderId } = useParams();
@@ -14,9 +14,10 @@ const OrderDetailsPage = () => {
 
     useEffect(() => {
         const fetchOrderDetails = async () => {
+            // ✅ সমাধান ১: আপনার আগের সঠিক ডেটা fetch করার লজিকটি ফিরিয়ে আনা হয়েছে।
+            // এই একটি URL অ্যাডমিন এবং ইউজার উভয়ের জন্যই কাজ করবে।
             try {
                 const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
-                // ✅ পরিবর্তন: API URL এখন ডাইনামিক
                 const { data } = await axios.get(`${API_URL}/api/orders/${orderId}`, config);
                 setOrder(data);
             } catch (err) {
@@ -26,8 +27,11 @@ const OrderDetailsPage = () => {
                 setLoading(false);
             }
         };
-        fetchOrderDetails();
-    }, [orderId, userInfo.token]);
+
+        if (userInfo && orderId) {
+            fetchOrderDetails();
+        }
+    }, [orderId, userInfo]);
 
     if (loading) return <p className="text-center p-10 font-semibold">Loading Order Details...</p>;
     if (error) return <p className="text-center p-10 text-red-500 font-semibold">{error}</p>;
@@ -51,9 +55,9 @@ const OrderDetailsPage = () => {
                             <h2 className="text-xl font-semibold mb-4 flex items-center gap-2"><FiClipboard /> Order Items ({orderItems.length})</h2>
                             <div className="space-y-4">
                                 {orderItems.map((item) => (
-                                    <div key={item._id} className="flex items-start gap-4 border-b pb-4 last:border-b-0">
-                                        {/* ✅ পরিবর্তন: ছবির URL এখন ডাইনামিক */}
-                                        <img src={`${API_URL}${item.image}`} alt={item.name} className="w-24 h-24 object-cover rounded-md border" />
+                                    <div key={item._id || item.product} className="flex items-start gap-4 border-b pb-4 last:border-b-0">
+                                        {/* ✅ সমাধান ২: ছবির URL থেকে `${API_URL}` সরানো হয়েছে */}
+                                        <img src={item.image} alt={item.name} className="w-24 h-24 object-cover rounded-md border" />
                                         <div className="flex-grow">
                                             <p className="font-bold text-lg text-gray-900">{item.name}</p>
                                             {item.size && <p className="text-sm text-gray-600"><strong>Size:</strong> {item.size}</p>}
