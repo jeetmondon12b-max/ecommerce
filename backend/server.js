@@ -31,7 +31,7 @@ app.use(
   cors({
     origin: [
       'https://ecommerce-2-odlo.onrender.com', // ✅ Render (LIVE Frontend)
-      'http://localhost:5174', // ✅ Local Frontend (Vite)
+      'http://localhost:5173', // ✅ Local Frontend (Vite)
     ],
     credentials: true,
   })

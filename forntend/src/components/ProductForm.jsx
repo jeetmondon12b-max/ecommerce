@@ -1,10 +1,13 @@
+
+
+
 // import React, { useState, useEffect, useRef } from "react";
 // import axios from "axios";
 // import { useAuth } from "../context/AuthContext";
 // import { useNavigate, useParams } from "react-router-dom";
 // import { FiUploadCloud, FiX, FiPlusCircle } from 'react-icons/fi';
 // import toast, { Toaster } from 'react-hot-toast';
-// import { API_URL } from '../apiConfig'; // ✅ পরিবর্তন: API_URL ইম্পোর্ট করা হয়েছে
+// import { API_URL } from '../apiConfig';
 
 // const ProductForm = () => {
 //     const { id: productId } = useParams();
@@ -15,7 +18,6 @@
 //         rating: "", numReviews: "",
 //     });
     
-//     // ... Other states remain unchanged ...
 //     const [allCategories, setAllCategories] = useState([]);
 //     const [selectedCategories, setSelectedCategories] = useState([]);
 //     const [image, setImage] = useState(null);
@@ -41,7 +43,6 @@
 //     useEffect(() => {
 //         const fetchPageCategories = async () => {
 //             try {
-//                 // ✅ পরিবর্তন: API URL এখন ডাইনামিক
 //                 const { data } = await axios.get(`${API_URL}/api/page-categories`);
 //                 if (data && Array.isArray(data.pageCategories)) {
 //                     setPageCategoryOptions(data.pageCategories);
@@ -59,7 +60,6 @@
 //     useEffect(() => {
 //         const fetchAllCategories = async () => {
 //             try {
-//                 // ✅ পরিবর্তন: API URL এখন ডাইনামিক
 //                 const { data } = await axios.get(`${API_URL}/api/categories`);
 //                 setAllCategories(Array.isArray(data) ? data : []);
 //             } catch (error) {
@@ -73,7 +73,6 @@
 //         if (isEditMode) {
 //             const fetchProduct = async () => {
 //                 try {
-//                     // ✅ পরিবর্তন: API URL এখন ডাইনামিক
 //                     const { data } = await axios.get(`${API_URL}/api/products/${productId}`);
 //                     setFormData({
 //                         name: data.name || "",
@@ -89,9 +88,8 @@
 //                     if (data.categories && Array.isArray(data.categories)) {
 //                         setSelectedCategories(data.categories.map(cat => cat._id));
 //                     }
-//                     // ✅ পরিবর্তন: ছবির URL এখন ডাইনামিক
-//                     setImagePreview(data.image ? `${API_URL}${data.image}`: "");
-//                     setProductImagesPreview(data.productImages ? data.productImages.map(img => `${API_URL}${img}`) : []);
+//                     setImagePreview(data.image || "");
+//                     setProductImagesPreview(data.productImages || []);
 //                     setStandardSizes(data.sizes?.standard || []);
 //                     setCustomSizes(data.sizes?.custom || []);
 //                 } catch (error) {
@@ -164,7 +162,6 @@
 //         if (image) formDataToSend.append("image", image);
 //         productImages.forEach(file => formDataToSend.append("productImages", file));
 
-//         // ✅ পরিবর্তন: API URL এখন ডাইনামিক
 //         const url = isEditMode ? `${API_URL}/api/products/${productId}` : `${API_URL}/api/products`;
 //         const method = isEditMode ? 'put' : 'post';
         
@@ -338,18 +335,24 @@
 
 // export default ProductForm;
 
-
-
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate, useParams } from "react-router-dom";
 import { FiUploadCloud, FiX, FiPlusCircle } from 'react-icons/fi';
 import toast, { Toaster } from 'react-hot-toast';
+import TextareaAutosize from 'react-textarea-autosize'; // ✅ সমাধান ২: নতুন লাইব্রেরি ইম্পোর্ট করা হয়েছে
 import { API_URL } from '../apiConfig';
 
 const ProductForm = () => {
     const { id: productId } = useParams();
+    const navigate = useNavigate();
+    const { userInfo } = useAuth();
+    
+    // ✅ সমাধান ১: পেজ লোড হওয়ার সাথে সাথে স্ক্রল করে উপরে যাওয়ার জন্য useEffect
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [productId]); // প্রতিবার নতুন প্রোডাক্ট ফর্ম খুললে এটি কাজ করবে
 
     const [formData, setFormData] = useState({
         name: "", brand: "", description: "", regularPrice: "",
@@ -371,10 +374,7 @@ const ProductForm = () => {
     const [submitting, setSubmitting] = useState(false);
     const [pageCategoryOptions, setPageCategoryOptions] = useState([]);
     
-    const { userInfo } = useAuth();
-    const navigate = useNavigate();
     const isEditMode = productId && productId !== 'new';
-
     const imageInputRef = useRef(null);
     const galleryInputRef = useRef(null);
     const standardSizeOptions = ['S', 'M', 'L', 'XL', 'XXL'];
@@ -583,7 +583,17 @@ const ProductForm = () => {
                 {/* --- Description Field --- */}
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Product Description</label>
-                    <textarea name="description" rows={5} value={formData.description} onChange={handleChange} className="w-full border rounded-lg px-4 py-2" required />
+                    {/* ✅ সমাধান ২: সাধারণ textarea-এর পরিবর্তে TextareaAutosize ব্যবহার করা হয়েছে */}
+                    <TextareaAutosize
+                        name="description"
+                        value={formData.description}
+                        onChange={handleChange}
+                        minRows={5}
+                        maxRows={20}
+                        className="w-full border rounded-lg px-4 py-2"
+                        placeholder="Enter detailed product description..."
+                        required
+                    />
                 </div>
 
                 {/* --- Image Upload Fields --- */}
