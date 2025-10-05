@@ -292,7 +292,7 @@
 // export default Header;
 
 
-import React, { useState, useEffect, useRef } from 'react'; // ✅ useRef ইম্পোর্ট করা হয়েছে
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useCart } from '../context/CartContext.jsx';
@@ -302,7 +302,7 @@ import {
 } from 'react-icons/fi';
 import toast, { Toaster } from 'react-hot-toast';
 
-// Profile Dropdown Component (অপরিবর্তিত)
+// Profile Dropdown Component
 const ProfileDropdown = ({ userInfo, onLogout }) => {
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef(null);
@@ -323,7 +323,7 @@ const ProfileDropdown = ({ userInfo, onLogout }) => {
                 onClick={() => setIsOpen(!isOpen)}
                 className="flex items-center gap-3 px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
             >
-                <img src={userInfo.avatar || `https://ui-avatars.com/api/?name=${userInfo.name}&background=random`} alt="avatar" className="w-7 h-7 rounded-full" />
+                <img src={userInfo.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(userInfo.name)}&background=random`} alt="avatar" className="w-7 h-7 rounded-full" />
                 <span className="font-semibold text-gray-700">Account</span>
                 <FiChevronDown className={`transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
             </button>
@@ -356,12 +356,11 @@ const ProfileDropdown = ({ userInfo, onLogout }) => {
     );
 };
 
-// ✅✅✅ Category Dropdown Component-এ মূল পরিবর্তনটি করা হয়েছে ✅✅✅
+// Category Dropdown Component
 const CategoryDropdown = ({ isMobile, onClick }) => {
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef(null);
 
-    // ড্রপডাউনের বাইরে ক্লিক করলে মেনু বন্ধ করার জন্য useEffect
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -373,13 +372,10 @@ const CategoryDropdown = ({ isMobile, onClick }) => {
     }, []);
 
     if (isMobile) {
-        // মোবাইলের ড্রপডাউন onClick প্রপার্টি ব্যবহার করে, তাই এখানে অতিরিক্ত পরিবর্তনের প্রয়োজন নেই
         return (
             <div className="w-full">
                 <button onClick={() => setIsOpen(!isOpen)} className="flex items-center justify-between w-full text-lg font-medium p-3 rounded-lg transition-colors hover:bg-indigo-600">
-                    <span className="flex items-center gap-3">
-                        <FiLayers />Categories
-                    </span>
+                    <span className="flex items-center gap-3"><FiLayers />Categories</span>
                     <FiChevronDown className={`transition-transform ${isOpen ? 'rotate-180' : ''}`} />
                 </button>
                 {isOpen && (
@@ -399,7 +395,6 @@ const CategoryDropdown = ({ isMobile, onClick }) => {
             </button>
             {isOpen && (
                 <div className="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-xl z-20">
-                    {/* ✅ সমাধান: প্রতিটি NavLink-এ onClick যোগ করা হয়েছে যা মেনু বন্ধ করবে */}
                     <NavLink to="/admin/page-categories" onClick={() => setIsOpen(false)} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Page Categories</NavLink>
                     <NavLink to="/admin/categories" onClick={() => setIsOpen(false)} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Product Categories</NavLink>
                 </div>
@@ -408,6 +403,7 @@ const CategoryDropdown = ({ isMobile, onClick }) => {
     );
 };
 
+// NavLinks Component
 const NavLinks = ({ isMobile, onClick, userInfo, onLogout }) => {
     const activeDesktop = { color: '#4f46e5', backgroundColor: '#eef2ff' };
     const activeMobile = { backgroundColor: 'rgba(255, 255, 255, 0.1)', color: 'white' };
@@ -421,6 +417,9 @@ const NavLinks = ({ isMobile, onClick, userInfo, onLogout }) => {
         <>
             {userInfo && userInfo.role === 'admin' ? (
                 <>
+                    {/* ✅ সমাধান: Homepage বাটনটি এখানে যোগ করা হয়েছে */}
+                    <NavLink to="/" target="_blank" rel="noopener noreferrer" className={navLinkClass} onClick={onClick}><FiHome />Homepage</NavLink>
+                    
                     <NavLink to="/admin" end style={getStyle} className={navLinkClass} onClick={onClick}><FiGrid />Dashboard</NavLink>
                     <NavLink to="/admin/products" style={getStyle} className={navLinkClass} onClick={onClick}><FiPackage />Products</NavLink>
                     <CategoryDropdown isMobile={isMobile} onClick={onClick} />
@@ -449,6 +448,7 @@ const NavLinks = ({ isMobile, onClick, userInfo, onLogout }) => {
     );
 };
 
+// Main Header Component
 const Header = () => {
     const { userInfo, logout } = useAuth();
     const { cartItems } = useCart();
@@ -464,8 +464,8 @@ const Header = () => {
                         <p className="text-sm text-gray-600 mt-1">Are you sure you want to end your session?</p>
                     </div>
                     <div className="grid grid-cols-2 gap-3">
-                        <button onClick={() => toast.dismiss(t.id)} className="w-full btn-secondary">Cancel</button>
-                        <button onClick={() => { logout(); navigate('/login'); toast.dismiss(t.id); }} className="w-full btn-danger">Logout</button>
+                        <button onClick={() => toast.dismiss(t.id)} className="w-full bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg">Cancel</button>
+                        <button onClick={() => { logout(); navigate('/login'); toast.dismiss(t.id); }} className="w-full bg-red-600 text-white font-semibold py-2 px-4 rounded-lg">Logout</button>
                     </div>
                 </div>
             </div>
