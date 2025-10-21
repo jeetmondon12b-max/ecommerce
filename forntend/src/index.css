@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+
+
+
+
+
+
+
+
+
+/* src/index.css ফাইলের শেষে যোগ করুন */
+
+.swiper-pagination-bullet {
+    width: 10px;
+    height: 10px;
+    background-color: #ffffff;
+    opacity: 0.6;
+    transition: all 0.3s;
+}
+
+.swiper-pagination-bullet-active {
+    width: 24px;
+    border-radius: 5px;
+    background-color: #4f46e5; /* Indigo color */
+    opacity: 1;
+}
+
+
+.swiper-button-prev,
+.swiper-button-next {
+    display: none;
+}
+
+
