@@ -179,7 +179,7 @@ export default function CheckoutPage() {
                     onClick={handleNext}
                     className="w-full bg-indigo-600 text-white py-3.5 rounded-xl font-semibold text-lg hover:bg-indigo-700 transition-all duration-300 shadow-lg hover:shadow-indigo-500/50 transform hover:-translate-y-1"
                 >
-                    Proceed to Shipping Address
+                    Proceed to Shipping Address  
                 </button>
             </div>
         </div>
